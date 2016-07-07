@@ -255,6 +255,11 @@ class BaseNode(NodeConnCB):
         self.sync(test_function, timeout)
         return
 
+    def wait_for_disconnect(self, timeout=60):
+        test_function = lambda: self.disconnected
+        self.sync(test_function, timeout)
+        return
+
     def send_header_for_blocks(self, new_blocks):
         headers_message = msg_headers()
         headers_message.headers = [ CBlockHeader(b) for b in new_blocks ]
