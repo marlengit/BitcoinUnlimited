@@ -90,7 +90,6 @@ public:
     {
         SetNull();
         nCreateTime = nCreateTime_;
-        hdKeypath.clear();
     }
 
     ADD_SERIALIZE_METHODS;
