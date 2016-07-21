@@ -1649,7 +1649,7 @@ struct UnknownForkData
 static UnknownForkData unknownFork[Consensus::MAX_VERSION_BITS_DEPLOYMENTS];
 // bip135 end
 
-static uint32_t GetBlockScriptFlags(const CBlockIndex* pindex, const Consensus::Params &consensusparams, const CBlock &block)
+static uint32_t GetBlockScriptFlags(const CBlockIndex* pindex, const Consensus::Params &consensusparams)
 {
     AssertLockHeld(cs_main);
 
@@ -1665,18 +1665,14 @@ static uint32_t GetBlockScriptFlags(const CBlockIndex* pindex, const Consensus::
         flags |= SCRIPT_ENABLE_SIGHASH_FORKID;
     }
 
-    // Start enforcing the DERSIG (BIP66) rules, for block.nVersion=3 blocks,
-    // when 75% of the network has upgraded:
-    if (block.nVersion >= 3 && IsSuperMajority(3, pindex->pprev,
-                                   consensusparams.nMajorityEnforceBlockUpgrade, consensusparams))
+    // Start enforcing the DERSIG (BIP66) rule
+    if (pindex->nHeight >= consensusparams.BIP66Height)
     {
         flags |= SCRIPT_VERIFY_DERSIG;
     }
 
-    // Start enforcing CHECKLOCKTIMEVERIFY, (BIP65) for block.nVersion=4
-    // blocks, when 75% of the network has upgraded:
-    if (block.nVersion >= 4 && IsSuperMajority(4, pindex->pprev,
-        consensusparams.nMajorityEnforceBlockUpgrade, consensusparams))
+    // Start enforcing CHECKLOCKTIMEVERIFY (BIP65) rule
+    if (pindex->nHeight >= consensusparams.BIP65Height)
     {
         flags |= SCRIPT_VERIFY_CHECKLOCKTIMEVERIFY;
     }
