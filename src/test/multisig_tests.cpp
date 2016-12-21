@@ -361,6 +361,14 @@ BOOST_AUTO_TEST_CASE(cltv_freeze)
 
 	BOOST_CHECK(nRequiredReturn == 1);
 
+	nRequiredReturn = 0;
+	ExtractDestinations(s2, type, addresses, nRequiredReturn);
+
+	BOOST_FOREACH(const CTxDestination& addr, addresses)
+		BOOST_CHECK(newAddr2.ToString() == CBitcoinAddress(addr).ToString());
+
+	BOOST_CHECK(nRequiredReturn == 1);
+
 
 }
 BOOST_AUTO_TEST_CASE(opreturn_send)
