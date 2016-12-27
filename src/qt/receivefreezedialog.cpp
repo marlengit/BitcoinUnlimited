@@ -8,6 +8,8 @@
 #include "guiconstants.h"
 #include "guiutil.h"
 #include "optionsmodel.h"
+#include "walletmodel.h"
+
 
 ReceiveFreezeDialog::ReceiveFreezeDialog(QWidget *parent) :
     QDialog(parent),
