@@ -19,6 +19,7 @@
 
 ReceiveFreezeDialog *freezeDialog;
 
+ReceiveFreezeDialog *freezeDialog;
 
 #include <QAction>
 #include <QCursor>

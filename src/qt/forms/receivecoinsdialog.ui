@@ -74,16 +74,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="freezeCheck">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Coin freezing locks coins to make them temporarily unspendable. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Coin Freeze</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
