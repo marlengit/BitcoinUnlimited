@@ -464,7 +464,8 @@ QString AddressTableModel::labelForFreeze(const QString &address) const
         }
 
     }
-    return QString();
+    return returnLabel;
+
 }
 
 /* Look up label for freeze in wallet, if not found return empty string.
