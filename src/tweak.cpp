@@ -157,3 +157,17 @@ UniValue settweak(const UniValue &params, bool fHelp)
     }
     return NullUniValue;
 }
+
+std::string TweakCmdLineHelp()
+{
+  std::string ret;
+  CTweakMap::iterator i;
+  for (i=tweaks.begin(); i != tweaks.end(); ++i)
+    {
+      std::string optname("-");
+      optname += i->second->GetName();
+      optname += "=<val>";
+      ret += HelpMessageOpt(optname,i->second->GetHelp());
+    }
+  return ret;
+}
