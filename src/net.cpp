@@ -1672,6 +1672,19 @@ void DumpAddresses()
     LOG(NET, "Flushed %d addresses to peers.dat  %dms\n", addrman.size(), GetTimeMillis() - nStart);
 }
 
+void DumpBanlist()
+{
+    int64_t nStart = GetTimeMillis();
+
+    CBanDB bandb;
+    banmap_t banmap;
+    CNode::GetBanned(banmap);
+    bandb.Write(banmap);
+
+    LogPrint("net", "Flushed %d banned node ips/subnets to banlist.dat  %dms\n",
+             banmap.size(), GetTimeMillis() - nStart);
+}
+
 void DumpData()
 {
     DumpAddresses();
