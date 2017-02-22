@@ -596,8 +596,9 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp)
     if (!address.IsValid())
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
     CScript scriptPubKey = GetScriptForDestination(address.Get());
-    if (!IsMine(*pwalletMain, scriptPubKey))
-        return ValueFromAmount(0);
+
+    if (!IsMine(*pwalletMain,scriptPubKey, chainActive.Tip()))
+        return (double)0.0;
 
     // Minimum confirmations
     int nMinDepth = 1;

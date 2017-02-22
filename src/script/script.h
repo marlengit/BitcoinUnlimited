@@ -9,6 +9,7 @@
 
 #include "crypto/common.h"
 #include "prevector.h"
+//#include "util.h" // Freeze
 
 #include <assert.h>
 #include <climits>
@@ -561,7 +562,6 @@ public:
             return OP_0;
         return (opcodetype)(OP_1+n-1);
     }
-
     int FindAndDelete(const CScript& b)
     {
         int nFound = 0;
