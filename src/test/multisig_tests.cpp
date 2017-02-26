@@ -308,6 +308,8 @@ BOOST_AUTO_TEST_CASE(multisig_Sign)
         BOOST_CHECK_MESSAGE(SignSignature(keystore, txFrom, txTo[i], 0), strprintf("SignSignature %d", i));
     }
 }
+
+#ifdef ENABLE_WALLET
 BOOST_AUTO_TEST_CASE(cltv_freeze)
 {
 
