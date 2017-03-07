@@ -408,6 +408,12 @@ void UnlimitedSetup(void)
         maxGeneratedBlock = excessiveBlockSize;
     }
 
+    if (maxGeneratedBlock > excessiveBlockSize)
+      {
+        LogPrintf("Reducing the maximum mined block from the configured %d to your excessive block size %d.  Otherwise you would orphan your own blocks.\n", maxGeneratedBlock, excessiveBlockSize);
+        maxGeneratedBlock = excessiveBlockSize;
+      }
+    
     settingsToUserAgentString();
     //  Init network shapers
     int64_t rb = GetArg("-receiveburst", DEFAULT_MAX_RECV_BURST);
