@@ -6756,6 +6756,14 @@ bool SendMessages(CNode *pto)
             LOGA("Initial headers were either not received or not received before the timeout\n", pto->GetLogName());
         }
 
+        // If a sync has been started check whether we received the first batch of headers requested within the timeout period.
+        // If not then disconnect and ban the node and a new node will automatically be selected to start the headers download.
+        if ((state.fSyncStarted) && (state.fSyncStartTime < GetTime() - INITIAL_HEADERS_TIMEOUT) && (!state.fFirstHeadersReceived)) {
+            pto->fDisconnect = true;
+            CNode::Ban(pto->addr, BanReasonNodeMisbehaving, 4*60*60); // ban for 4 hours
+            LogPrintf("Banning %s because initial headers were either not received or not received before the timeout\n", pto->addr.ToString());
+        }
+
         // Start block sync
         if (pindexBestHeader == nullptr)
             pindexBestHeader = chainActive.Tip();
