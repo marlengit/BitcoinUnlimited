@@ -297,6 +297,8 @@ CTweak<CAmount> maxTxFee("wallet.maxTxFee",
     "transactions.",
     DEFAULT_TRANSACTION_MAXFEE);
 
+CTweak<CAmount> maxTxFee("wallet.maxTxFee","Maximum total fees to use in a single wallet transaction or raw transaction; setting this too low may abort large transactions.",DEFAULT_TRANSACTION_MAXFEE);
+
 /** Number of blocks that can be requested at any given time from a single peer. */
 CTweak<unsigned int> maxBlocksInTransitPerPeer("net.maxBlocksInTransitPerPeer",
     "Number of blocks that can be requested at any given time from a single peer. 0 means use algorithm.",
