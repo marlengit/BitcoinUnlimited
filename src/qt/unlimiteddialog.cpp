@@ -198,6 +198,31 @@ void UnlimitedDialog::validateBlockSize()
     }
 }
 
+void UnlimitedDialog::validateBlockSize()
+{
+    ui.statusLabel->setStyleSheet("QLabel { color: red; }");
+
+    int mmb = ui.miningMaxBlock->text().toInt();
+    int ebs = ui.excessiveBlockSize->text().toInt();
+
+    /* the mined block size must not be greater then the excessive block 
+     * size else the miner will be mining blocks she cannot track. */
+    if ( mmb > ebs )
+    {
+       ui.statusLabel->setText(tr("Mined block size cannot be larger then excessive block size!"));
+       ui.miningMaxBlock->setStyleSheet("QLineEdit {  background-color: red; }");
+       ui.excessiveBlockSize->setStyleSheet("QLineEdit { background-color: red; }");
+       ui.okButton->setEnabled(false);
+    }
+    else
+    {
+       ui.statusLabel->clear();
+       ui.excessiveBlockSize->setStyleSheet("");
+       ui.miningMaxBlock->setStyleSheet("");
+       ui.okButton->setEnabled(true);
+   }
+}
+
 void UnlimitedDialog::shapingAveEditFinished(void)
 {
     bool ok, ok2 = false;
