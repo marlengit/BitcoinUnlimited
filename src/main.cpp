@@ -5329,6 +5329,17 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
             dosMan.Misbehaving(pfrom, 20);
             return error("message getdata size() = %u", vInv.size());
         }
+        for (unsigned int nInv = 0; nInv < vInv.size(); nInv++)  // Validate that INVs are a valid type
+        {
+            const CInv &inv = vInv[nInv];
+            if (!((inv.type == MSG_TX) || (inv.type == MSG_BLOCK) || (inv.type == MSG_FILTERED_BLOCK) || (inv.type == MSG_THINBLOCK) || (inv.type == MSG_XTHINBLOCK)))
+              {
+              Misbehaving(pfrom->GetId(), 20);
+              return error("message inv invalid type = %u", inv.type);                
+              }
+            // inv.hash does not need validation, since SHA2556 hash can be any value
+        }
+        
 
         // Validate that INVs are a valid type
         for (unsigned int nInv = 0; nInv < vInv.size(); nInv++)

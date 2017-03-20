@@ -218,6 +218,7 @@ void UpdateSendStats(CNode *pfrom, const char *strCommand, int msgSize, int64_t 
                 *stat << msgSize;
         }
     }
+  return true;
 }
 
 void UpdateRecvStats(CNode *pfrom, const std::string &strCommand, int msgSize, int64_t nTimeReceived)
