@@ -299,6 +299,9 @@ BOOST_AUTO_TEST_CASE(check_validator_rule)
 
 BOOST_AUTO_TEST_CASE(check_excessive_validator)
 {
+    unsigned int c_mgb = maxGeneratedBlock;
+    unsigned int c_ebs = excessiveBlockSize;
+
     // fudge global variables....
     maxGeneratedBlock = 1000000;
     excessiveBlockSize = 888;
@@ -338,10 +341,16 @@ BOOST_AUTO_TEST_CASE(check_excessive_validator)
 
     str = ExcessiveBlockValidator(tmpExcessive, (unsigned int *) 42, true);
     BOOST_CHECK(! str.empty());
+
+    maxGeneratedBlock = c_mgb;
+    excessiveBlockSize = c_ebs;
 }
 
 BOOST_AUTO_TEST_CASE(check_generated_block_validator)
 {
+    unsigned int c_mgb = maxGeneratedBlock;
+    unsigned int c_ebs = excessiveBlockSize;
+
     // fudge global variables....
     maxGeneratedBlock = 888;
     excessiveBlockSize = 1000000;
@@ -381,6 +390,9 @@ BOOST_AUTO_TEST_CASE(check_generated_block_validator)
 
     str = MiningBlockSizeValidator(tmpMGB, (uint64_t *) 42, true);
     BOOST_CHECK(! str.empty());
+
+    maxGeneratedBlock = c_mgb;
+    excessiveBlockSize = c_ebs;
 }
 
 
