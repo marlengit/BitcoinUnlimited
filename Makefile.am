@@ -209,6 +209,9 @@ endif
 check-formatting:
 	$(MAKE) -C src $@
 
+check-formatting:
+	$(MAKE) -C src $@
+
 dist_noinst_SCRIPTS = autogen.sh
 
 EXTRA_DIST = $(top_srcdir)/share/genbuild.sh qa/pull-tester/rpc-tests.py qa/pull-tester/test_classes.py qa/rpc-tests $(DIST_DOCS) $(WINDOWS_PACKAGING) $(OSX_PACKAGING) $(BIN_CHECKS)
