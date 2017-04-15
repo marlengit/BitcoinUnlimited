@@ -5068,6 +5068,21 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
     }
 
 
+    else if (pfrom->nVersion == 0)
+    {
+        // Must have version message before anything else (Although we may send our VERSION before
+        // we receive theirs, it would not be possible to receive their VERACK before their VERSION).
+        // NOTE:  we MUST explicitly ban the peer here.  If we only indicate a misbehaviour then the peer
+        //        may never be banned since the banning process requires that messages be sent back. If an
+        //        attacker sends us messages that do not require a response coupled with an nVersion of zero
+        //        then they can continue unimpeded even though they have exceeded the misbehaving threshold.
+        pfrom->fDisconnect = true;
+        CNode::Ban(pfrom->addr, BanReasonNodeMisbehaving);
+        return error("VERSION was not received before other messages - banning peer=%d ip=%s",
+            pfrom->GetId(), pfrom->addrName.c_str());
+    }
+
+
     else if (strCommand == NetMsgType::VERACK)
     {
         // If we haven't sent a VERSION message yet then we should not get a VERACK message.
@@ -5933,6 +5948,13 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
         if (!pfrom->ThinBlockCapable())
         {
             dosMan.Misbehaving(pfrom, 100);
+            return error("Thinblock message received from a non thinblock node, peer=%d", pfrom->GetId());
+        }
+
+        if (!pfrom->ThinBlockCapable())
+        {
+            LOCK(cs_main);
+            Misbehaving(pfrom->GetId(), 100);
             return error("Thinblock message received from a non thinblock node, peer=%d", pfrom->GetId());
         }
 
