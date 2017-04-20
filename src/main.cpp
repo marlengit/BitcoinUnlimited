@@ -6043,8 +6043,7 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
     }
 
 
-    // BUVERSION is used to pass BU specific version information similar to NetMsgType::VERSION
-    // and is exchanged after the VERSION and VERACK are both sent and received.
+    // BU - used to pass BU specific version information similar to NetMsgType::VERSION
     else if (strCommand == NetMsgType::BUVERSION)
     {
         // If we never sent a VERACK message then we should not get a BUVERSION message.
