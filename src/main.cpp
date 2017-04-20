@@ -1717,6 +1717,22 @@ static uint32_t GetBlockScriptFlags(const CBlockIndex *pindex, const Consensus::
     return flags;
 }
 
+// bip-genvbvoting begin
+// keep track of count over last 100
+struct UnknownForkData {
+    int UnknownForkSignalStrength {0};
+    bool UnknownForkSignalFirstDetected {false};
+    bool UnknownForkSignalLost {false};
+    bool UnknownForkSignalAt25Percent {false};
+    bool UnknownForkSignalAt50Percent {false};
+    bool UnknownForkSignalAt70Percent {false};
+    bool UnknownForkSignalAt90Percent {false};
+    bool UnknownForkSignalAt95Percent {false};
+};
+
+static UnknownForkData unknownFork[VERSIONBITS_NUM_BITS];
+// bip-genvbvoting end
+
 static int64_t nTimeCheck = 0;
 static int64_t nTimeForks = 0;
 static int64_t nTimeVerify = 0;
