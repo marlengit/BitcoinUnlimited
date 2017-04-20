@@ -146,7 +146,7 @@ class VersionBitsWarningTest(BitcoinTestFramework):
 
         # 3. Now build one period of blocks with > VB_THRESHOLD blocks signaling
         # some unknown bit
-        for i in range(VB_THRESHOLD):
+        for i in range(VB_THRESHOLD + 1):
             self.send_blocks_with_version(test_node, 1, nVersion)
             test_node.sync_with_ping()
         assert(self.nodes[0].getblockcount() ==  VB_PERIOD * 2 + VB_THRESHOLD)
