@@ -186,6 +186,10 @@ ThresholdState AbstractThresholdConditionChecker::GetStateFor(const CBlockIndex 
         vToCompute.push_back(pindexPrev);
         // go back one more period
         pindexPrev = pindexPrev->GetAncestor(pindexPrev->nHeight - nPeriod);
+
+        if (cache.count(pindexPrev) > 0 && cache[pindexPrev] == THRESHOLD_DEFINED) {
+            backAtDefined = true;
+        }
     }
 
     // At this point, cache[pindexPrev] is known
@@ -209,17 +213,39 @@ ThresholdState AbstractThresholdConditionChecker::GetStateFor(const CBlockIndex 
             {
                 stateNext = THRESHOLD_FAILED;
             }
-            else if (pindexPrev->GetMedianTimePast() >= nTimeStart)
-            {
-                stateNext = THRESHOLD_STARTED;
+            case THRESHOLD_STARTED: {
+                if (pindexPrev->GetMedianTimePast() >= nTimeTimeout) {
+                    stateNext = THRESHOLD_FAILED;
+                    break;
+                }
+                // We need to count
+                const CBlockIndex* pindexCount = pindexPrev;
+                int count = 0;
+                for (int i = 0; i < nPeriod; i++) {
+                    if (Condition(pindexCount, params)) {
+                        count++;
+                    }
+                    pindexCount = pindexCount->pprev;
+                }
+                if (count >= nThreshold) {
+                    stateNext = THRESHOLD_LOCKED_IN;
+                    // bip-genvbvoting: make a note of lock-in time & height
+                    // this will be used for assessing grace period conditions.
+                    nActualLockinBlock = pindexPrev->nHeight;
+                    nActualLockinTime = pindexPrev->GetMedianTimePast();
+                }
+                break;
             }
-            break;
-        }
-        case THRESHOLD_STARTED:
-        {
-            if (pindexPrev->GetMedianTimePast() >= nTimeTimeout)
-            {
-                stateNext = THRESHOLD_FAILED;
+            case THRESHOLD_LOCKED_IN: {
+                // bip-genvbvoting: Progress to ACTIVE only once all grace conditions are met.
+                if (pindexPrev->GetMedianTimePast() >= nActualLockinTime + nMinLockedTime
+                        && pindexPrev->nHeight >= nActualLockinBlock + nMinLockedBlocks) {
+                    stateNext = THRESHOLD_ACTIVE;
+                }
+                else {
+                    // bip-genvbvoting: if grace not yet met, remain in LOCKED_IN
+                    stateNext = THRESHOLD_LOCKED_IN;
+                }
                 break;
             }
             // We need to count
