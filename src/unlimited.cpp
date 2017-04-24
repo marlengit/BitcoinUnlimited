@@ -70,6 +70,9 @@ extern CTweakRef<uint64_t> ebTweak;
 int64_t nMaxTipAge = DEFAULT_MAX_TIP_AGE;
 static const int NEW_CANDIDATE_INTERVAL = 30; // seconds
 
+extern CCriticalSection cs_previousblock;
+vector<uint256> vPreviousBlock;
+
 bool IsTrafficShapingEnabled();
 UniValue validateblocktemplate(const UniValue &params, bool fHelp);
 UniValue validatechainhistory(const UniValue &params, bool fHelp);
