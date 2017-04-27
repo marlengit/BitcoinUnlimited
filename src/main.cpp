@@ -6023,13 +6023,13 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
     }
 
 
-    else if (strCommand == NetMsgType::XPEDITEDREQUEST)
+    else if (strCommand == NetMsgType::XPEDITEDREQUEST && IsThinBlocksEnabled())
     {
         return HandleExpeditedRequest(vRecv, pfrom);
     }
 
 
-    else if (strCommand == NetMsgType::XPEDITEDBLK)
+    else if (strCommand == NetMsgType::XPEDITEDBLK && IsThinBlocksEnabled() && IsExpeditedNode(pfrom))
     {
         // ignore the expedited message unless we are at the chain tip...
         if (!fImporting && !fReindex && !IsInitialBlockDownload())
@@ -6043,7 +6043,8 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
     }
 
 
-    // BU - used to pass BU specific version information similar to NetMsgType::VERSION
+    // BUVERSION is used to pass BU specific version information similar to NetMsgType::VERSION
+    // and is exchanged after the VERSION and VERACK are both sent and received.
     else if (strCommand == NetMsgType::BUVERSION)
     {
         // If we never sent a VERACK message then we should not get a BUVERSION message.
