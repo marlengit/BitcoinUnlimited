@@ -180,6 +180,9 @@ bool CThinBlock::process(CNode *pfrom, int nSizeThinBlock)
     // Clear out data we no longer need before processing block.
     pfrom->thinBlockHashes.clear();
 
+    // Clear out data we no longer need before processing block.
+    pfrom->thinBlockHashes.clear();
+
     if (pfrom->thinBlockWaitingForTxns == 0)
     {
         // We have all the transactions now that are in this block: try to reassemble and process.
