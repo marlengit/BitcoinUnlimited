@@ -70,7 +70,11 @@ extern CTweakRef<uint64_t> ebTweak;
 int64_t nMaxTipAge = DEFAULT_MAX_TIP_AGE;
 static const int NEW_CANDIDATE_INTERVAL = 30; // seconds
 
-extern CCriticalSection cs_previousblock;
+extern CCriticalSection cs_previousblock;  // Protects the vPreviousBlock array
+// This vector holds hashes of the transactions in the previous block.  When a new block comes in it is used to
+// flush the orphan pool of any transactions that may have trickled in AFTER the block that mines them has already
+// been processed.  In this case a transaction may look like an orphan because its parents have already been removed
+// from the UTXO set.
 vector<uint256> vPreviousBlock;
 
 bool IsTrafficShapingEnabled();
