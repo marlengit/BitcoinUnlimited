@@ -6023,13 +6023,13 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
     }
 
 
-    else if (strCommand == NetMsgType::XPEDITEDREQUEST && IsThinBlocksEnabled())
+    else if (strCommand == NetMsgType::XPEDITEDREQUEST)
     {
         return HandleExpeditedRequest(vRecv, pfrom);
     }
 
 
-    else if (strCommand == NetMsgType::XPEDITEDBLK && IsThinBlocksEnabled() && IsExpeditedNode(pfrom))
+    else if (strCommand == NetMsgType::XPEDITEDBLK)
     {
         // ignore the expedited message unless we are at the chain tip...
         if (!fImporting && !fReindex && !IsInitialBlockDownload())
