@@ -427,6 +427,9 @@ bool CheckSequenceLocks(const CTransaction &tx,
     LockPoints *lp = nullptr,
     bool useExistingLockPoints = false);
 
+/** Update tracking information about which blocks a peer is assumed to have. */
+void UpdateBlockAvailability(NodeId nodeid, const uint256 &hash);
+
 /**
  * Class that keeps track of number of signature operations
  * and bytes hashed to compute signature hashes.
