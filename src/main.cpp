@@ -5069,7 +5069,7 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
     }
 
 
-    else if (pfrom->nVersion == 0)
+    else if (pfrom->nVersion == 0 && !pfrom->fWhitelisted)
     {
         // Must have version message before anything else (Although we may send our VERSION before
         // we receive theirs, it would not be possible to receive their VERACK before their VERSION).
@@ -6784,7 +6784,7 @@ bool SendMessages(CNode *pto)
         // If not then disconnect and ban the node and a new node will automatically be selected to start the headers
         // download.
         if ((state.fSyncStarted) && (state.fSyncStartTime < GetTime() - INITIAL_HEADERS_TIMEOUT) &&
-            (!state.fFirstHeadersReceived))
+            (!state.fFirstHeadersReceived) && !pto->fWhitelisted)
         {
             pto->fDisconnect = true;
             CNode::Ban(pto->addr, BanReasonNodeMisbehaving, 4 * 60 * 60); // ban for 4 hours
