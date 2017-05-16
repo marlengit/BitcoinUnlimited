@@ -229,7 +229,7 @@ ThresholdState AbstractThresholdConditionChecker::GetStateFor(const CBlockIndex 
                 }
                 if (count >= nThreshold) {
                     stateNext = THRESHOLD_LOCKED_IN;
-                    // bip-genvbvoting: make a note of lock-in time & height
+                    // bip135: make a note of lock-in time & height
                     // this will be used for assessing grace period conditions.
                     nActualLockinBlock = pindexPrev->nHeight;
                     nActualLockinTime = pindexPrev->GetMedianTimePast();
@@ -237,13 +237,13 @@ ThresholdState AbstractThresholdConditionChecker::GetStateFor(const CBlockIndex 
                 break;
             }
             case THRESHOLD_LOCKED_IN: {
-                // bip-genvbvoting: Progress to ACTIVE only once all grace conditions are met.
+                // bip135: Progress to ACTIVE only once all grace conditions are met.
                 if (pindexPrev->GetMedianTimePast() >= nActualLockinTime + nMinLockedTime
                         && pindexPrev->nHeight >= nActualLockinBlock + nMinLockedBlocks) {
                     stateNext = THRESHOLD_ACTIVE;
                 }
                 else {
-                    // bip-genvbvoting: if grace not yet met, remain in LOCKED_IN
+                    // bip135: if grace not yet met, remain in LOCKED_IN
                     stateNext = THRESHOLD_LOCKED_IN;
                 }
                 break;
