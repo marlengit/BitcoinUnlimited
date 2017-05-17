@@ -545,7 +545,6 @@ bool CXThinBlock::HandleMessage(CDataStream &vRecv, CNode *pfrom, std::string st
         return error("%s message received from a non XTHIN node, peer=%s", strCommand, pfrom->GetLogName());
     }
 
-    bool fAlreadyHave = false;
     int nSizeThinBlock = vRecv.size();
     CInv inv(MSG_BLOCK, uint256());
 
