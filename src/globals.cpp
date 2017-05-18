@@ -35,6 +35,7 @@
 #include "txmempool.h"
 #include "txorphanpool.h"
 #include "ui_interface.h"
+#include "unlimited.h"
 #include "util.h"
 #include "utilstrencodings.h"
 #include "validationinterface.h"

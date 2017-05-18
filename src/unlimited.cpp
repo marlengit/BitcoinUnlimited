@@ -70,7 +70,7 @@ extern CTweakRef<uint64_t> ebTweak;
 int64_t nMaxTipAge = DEFAULT_MAX_TIP_AGE;
 static const int NEW_CANDIDATE_INTERVAL = 30; // seconds
 
-extern CCriticalSection cs_previousblock;  // Protects the vPreviousBlock array
+extern CCriticalSection cs_previousblock; // Protects the vPreviousBlock array
 // This vector holds hashes of the transactions in the previous block.  When a new block comes in it is used to
 // flush the orphan pool of any transactions that may have trickled in AFTER the block that mines them has already
 // been processed.  In this case a transaction may look like an orphan because its parents have already been removed
@@ -417,11 +417,13 @@ void UnlimitedSetup(void)
     }
 
     if (maxGeneratedBlock > excessiveBlockSize)
-      {
-        LogPrintf("Reducing the maximum mined block from the configured %d to your excessive block size %d.  Otherwise you would orphan your own blocks.\n", maxGeneratedBlock, excessiveBlockSize);
+    {
+        LogPrintf("Reducing the maximum mined block from the configured %d to your excessive block size %d.  Otherwise "
+                  "you would orphan your own blocks.\n",
+            maxGeneratedBlock, excessiveBlockSize);
         maxGeneratedBlock = excessiveBlockSize;
-      }
-    
+    }
+
     settingsToUserAgentString();
     //  Init network shapers
     int64_t rb = GetArg("-receiveburst", DEFAULT_MAX_RECV_BURST);

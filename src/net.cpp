@@ -1681,8 +1681,8 @@ void DumpBanlist()
     CNode::GetBanned(banmap);
     bandb.Write(banmap);
 
-    LogPrint("net", "Flushed %d banned node ips/subnets to banlist.dat  %dms\n",
-             banmap.size(), GetTimeMillis() - nStart);
+    LogPrint(
+        "net", "Flushed %d banned node ips/subnets to banlist.dat  %dms\n", banmap.size(), GetTimeMillis() - nStart);
 }
 
 void DumpData()

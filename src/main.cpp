@@ -44,6 +44,7 @@
 #include "uahf_fork.h"
 #include "ui_interface.h"
 #include "undo.h"
+#include "unlimited.h" // This is here because many files include util, so hopefully it will minimize diffs
 #include "util.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
@@ -5078,8 +5079,8 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
         //        then they can continue unimpeded even though they have exceeded the misbehaving threshold.
         pfrom->fDisconnect = true;
         CNode::Ban(pfrom->addr, BanReasonNodeMisbehaving);
-        return error("VERSION was not received before other messages - banning peer=%d ip=%s",
-            pfrom->GetId(), pfrom->addrName.c_str());
+        return error("VERSION was not received before other messages - banning peer=%d ip=%s", pfrom->GetId(),
+            pfrom->addrName.c_str());
     }
 
 
@@ -5349,14 +5350,15 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
         for (unsigned int nInv = 0; nInv < vInv.size(); nInv++)
         {
             const CInv &inv = vInv[nInv];
-            if (!((inv.type == MSG_TX) || (inv.type == MSG_BLOCK) || (inv.type == MSG_FILTERED_BLOCK) || (inv.type == MSG_THINBLOCK) || (inv.type == MSG_XTHINBLOCK)))
+            if (!((inv.type == MSG_TX) || (inv.type == MSG_BLOCK) || (inv.type == MSG_FILTERED_BLOCK) ||
+                    (inv.type == MSG_THINBLOCK) || (inv.type == MSG_XTHINBLOCK)))
             {
                 Misbehaving(pfrom->GetId(), 20);
-                return error("message inv invalid type = %u", inv.type);                
+                return error("message inv invalid type = %u", inv.type);
             }
             // inv.hash does not need validation, since SHA2556 hash can be any value
         }
-        
+
 
         // Validate that INVs are a valid type
         for (unsigned int nInv = 0; nInv < vInv.size(); nInv++)
@@ -6778,12 +6780,18 @@ bool SendMessages(CNode *pto)
             LOGA("Initial headers were either not received or not received before the timeout\n", pto->GetLogName());
         }
 
-        // If a sync has been started check whether we received the first batch of headers requested within the timeout period.
-        // If not then disconnect and ban the node and a new node will automatically be selected to start the headers download.
-        if ((state.fSyncStarted) && (state.fSyncStartTime < GetTime() - INITIAL_HEADERS_TIMEOUT) && (!state.fFirstHeadersReceived)) {
+        // If a sync has been started check whether we received the first batch of headers requested within the timeout
+        // period.
+        // If not then disconnect and ban the node and a new node will automatically be selected to start the headers
+        // download.
+        if ((state.fSyncStarted) && (state.fSyncStartTime < GetTime() - INITIAL_HEADERS_TIMEOUT) &&
+            (!state.fFirstHeadersReceived))
+        {
             pto->fDisconnect = true;
-            CNode::Ban(pto->addr, BanReasonNodeMisbehaving, 4*60*60); // ban for 4 hours
-            LogPrintf("Banning %s because initial headers were either not received or not received before the timeout\n", pto->addr.ToString());
+            CNode::Ban(pto->addr, BanReasonNodeMisbehaving, 4 * 60 * 60); // ban for 4 hours
+            LogPrintf(
+                "Banning %s because initial headers were either not received or not received before the timeout\n",
+                pto->addr.ToString());
         }
 
         // Start block sync

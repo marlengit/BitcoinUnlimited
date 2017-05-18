@@ -522,6 +522,17 @@ protected:
     }
 };
 
+    // 0 is latest, then pass a negative number for prior
+    const RecordType &History(int series, int ago)
+    {
+        assert(ago <= 0);
+        assert(series < STATISTICS_NUM_RANGES);
+        assert(-1 * ago <= STATISTICS_SAMPLES);
+        int pos = loc[series] - 1 + ago;
+        if (pos < 0)
+            pos += STATISTICS_SAMPLES;
+        return history[series][pos];
+    }
 
 template <class NUM>
 class MinValMax
@@ -549,6 +560,8 @@ public:
         samples = rhs.samples;
         return *this;
     }
+};
+
 
     bool operator!=(const MinValMax &rhs) const { return !(*this == rhs); }
     bool operator==(const MinValMax &rhs) const

@@ -21,6 +21,7 @@
 #include "tweak.h"
 #include "txdb.h" // for -dbcache defaults
 #include "tweak.h"
+#include "txdb.h" // for -dbcache defaults
 
 #ifdef ENABLE_WALLET
 #include "wallet/wallet.h"

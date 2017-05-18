@@ -22,7 +22,6 @@
 #include <boost/thread.hpp>
 #include <list>
 #include <vector>
-#include <list>
 
 enum
 {
