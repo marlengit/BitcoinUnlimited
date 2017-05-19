@@ -44,7 +44,6 @@
 #include "uahf_fork.h"
 #include "ui_interface.h"
 #include "undo.h"
-#include "unlimited.h" // This is here because many files include util, so hopefully it will minimize diffs
 #include "util.h"
 #include "utilmoneystr.h"
 #include "utilstrencodings.h"
