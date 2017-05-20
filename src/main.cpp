@@ -5687,7 +5687,7 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
         bool fNewUnconnectedHeaders = false;
         uint256 hashLastBlock;
         hashLastBlock.SetNull();
-        for (const CBlockHeader &header : headers)
+        BOOST_FOREACH (const CBlockHeader &header, headers)
         {
             // check that the first header has a previous block in the blockindex.
             if (hashLastBlock.IsNull())
@@ -5891,7 +5891,6 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
 
         // update the syncd status.  This should come before we make calls to requester.AskFor().
         IsChainNearlySyncdInit();
-        IsInitialBlockDownloadInit();
 
         // If this set of headers is valid and ends in a block with at least as
         // much work as our tip, download as much as possible.
