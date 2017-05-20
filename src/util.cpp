@@ -22,6 +22,7 @@
 
 #include <sstream>
 #include <stdarg.h>
+#include <sstream>
 
 #if (defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__))
 #include <pthread.h>
