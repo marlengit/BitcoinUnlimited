@@ -3,6 +3,11 @@
 # Copyright (c) 2016-2017 The Bitcoin Unlimited developers
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
+"""Test version bits warning system.
+
+Generate chains with block versions that appear to be signalling unknown
+forks, and test that warning alerts are generated.
+"""
 
 import test_framework.loginit
 from test_framework.mininode import *
@@ -141,7 +146,7 @@ class VersionBitsWarningTest(BitcoinTestFramework):
 
         # 3. Now build one period of blocks with > VB_THRESHOLD blocks signaling
         # some unknown bit
-        for i in range(VB_THRESHOLD + 1):
+        for i in range(VB_THRESHOLD):
             self.send_blocks_with_version(test_node, 1, nVersion)
             test_node.sync_with_ping()
         assert(self.nodes[0].getblockcount() ==  VB_PERIOD * 2 + VB_THRESHOLD)
