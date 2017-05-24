@@ -186,10 +186,6 @@ ThresholdState AbstractThresholdConditionChecker::GetStateFor(const CBlockIndex 
         vToCompute.push_back(pindexPrev);
         // go back one more period
         pindexPrev = pindexPrev->GetAncestor(pindexPrev->nHeight - nPeriod);
-
-        if (cache.count(pindexPrev) > 0 && cache[pindexPrev] == THRESHOLD_DEFINED) {
-            backAtDefined = true;
-        }
     }
 
     // At this point, cache[pindexPrev] is known
