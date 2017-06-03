@@ -289,7 +289,6 @@ public:
 };
 CUnlParams unlParams;
 
-
 /**
  * Testnet (v3)
  */
