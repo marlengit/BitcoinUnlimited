@@ -5077,9 +5077,7 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
         //        attacker sends us messages that do not require a response coupled with an nVersion of zero
         //        then they can continue unimpeded even though they have exceeded the misbehaving threshold.
         pfrom->fDisconnect = true;
-        CNode::Ban(pfrom->addr, BanReasonNodeMisbehaving);
-        return error("VERSION was not received before other messages - banning peer=%d ip=%s", pfrom->GetId(),
-            pfrom->addrName.c_str());
+        return error("VERSION was not received before other messages - disconnecting peer=%s", pfrom->GetLogName());
     }
 
 
