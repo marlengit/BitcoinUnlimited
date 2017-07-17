@@ -288,8 +288,6 @@ class SendHeadersTest(BitcoinTestFramework):
     def setup_network(self):
         # TODO: currently mininode does not have support for thinblocks so we can not sync a get_xthin request and must
         #       therefore have thinblocks turned off during testing.
-        # Currently there are mininode syncronization issues when Parallel Validation is turned on
-        # and therefore have -parallel=0 when running these tests.
         self.nodes = []
         args = [["-debug", "-logtimemicros=1", "-parallel=0", "-use-thinblocks=0", "-use-grapheneblocks=0"]]*2
         self.nodes = start_nodes(2, self.options.tmpdir, args)
