@@ -15,6 +15,7 @@
 #include "netbase.h"
 #include "protocol.h"
 #include "sync.h"
+#include "thinblock.h"
 #include "timedata.h"
 #include "tweak.h"
 #include "ui_interface.h"
