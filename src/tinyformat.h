@@ -784,6 +784,7 @@ inline const char* streamStateFromFormat(std::ostream& out, bool& spacePadPositi
 }
 
 
+
 //------------------------------------------------------------------------------
 inline void formatImpl(std::ostream& out, const char* fmt,
                        const detail::FormatArg* formatters,
