@@ -7,7 +7,6 @@
 #include "miner.h"
 
 #include "amount.h"
-#include "buip055fork.h"
 #include "chain.h"
 #include "chainparams.h"
 #include "coins.h"
