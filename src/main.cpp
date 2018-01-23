@@ -6780,7 +6780,7 @@ bool SendMessages(CNode *pto)
             (!state.fFirstHeadersReceived) && !pto->fWhitelisted)
         {
             pto->fDisconnect = true;
-            LogPrintf(
+            LOGA(
                 "Initial headers were either not received or not received before the timeout - disconnecting peer=%s\n",
                 pto->GetLogName());
         }
