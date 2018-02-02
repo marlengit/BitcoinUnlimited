@@ -535,6 +535,7 @@ void StopHTTPServer()
         {
             threadHTTP.join();
         }
+        threadHTTP.join();
     }
     if (eventHTTP)
     {
