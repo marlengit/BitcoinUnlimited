@@ -82,6 +82,8 @@ static const unsigned int DEFAULT_MAX_PEER_CONNECTIONS = 125;
 static const unsigned int DEFAULT_MAX_OUTBOUND_CONNECTIONS = 16;
 /** BU: The minimum number of xthin nodes to connect */
 static const uint8_t MIN_XTHIN_NODES = 8;
+/** BU: The minimum number of graphene nodes to connect */
+static const uint8_t MIN_GRAPHENE_NODES = 8;
 /** BU: The daily maximum disconnects while searching for xthin nodes to connect */
 static const unsigned int MAX_DISCONNECTS = 200;
 /** The default for -maxuploadtarget. 0 = Unlimited */
@@ -577,6 +579,15 @@ public:
     }
 
     void AddAddressKnown(const CAddress &_addr) { addrKnown.insert(_addr.GetKey()); }
+    // BUIPXXX:
+    bool GrapheneCapable()
+    {
+        if (nServices & NODE_GRAPHENE)
+            return true;
+        return false;
+    }
+
+    void AddAddressKnown(const CAddress &addr) { addrKnown.insert(addr.GetKey()); }
     void PushAddress(const CAddress &_addr, FastRandomContext &insecure_rand)
     {
         // Known checking here is only to save space from duplicates.

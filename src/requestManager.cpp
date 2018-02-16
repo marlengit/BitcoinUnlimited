@@ -10,6 +10,7 @@
 #include "consensus/consensus.h"
 #include "consensus/params.h"
 #include "consensus/validation.h"
+#include "graphene.h"
 #include "leakybucket.h"
 #include "main.h"
 #include "net.h"
@@ -600,7 +601,6 @@ void CRequestManager::ResetLastBlockRequestTime(const uint256 &hash)
         return true;
     }
     return false; // no block was requested
-    // BUIP010 Xtreme Thinblocks: end section
 }
 
 void CRequestManager::ResetLastRequestTime(const uint256 &hash)

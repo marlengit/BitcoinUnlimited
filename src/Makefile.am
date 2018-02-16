@@ -135,6 +135,7 @@ BITCOIN_CORE_H = \
   fast-cpp-csv-parser/csv.h \
   forks_csv.h \
   fs.h \
+  graphene.h \
   httprpc.h \
   httpserver.h \
   iblt.h \
@@ -239,6 +240,7 @@ libbitcoin_server_a_SOURCES = \
   dosman.cpp \
   expedited.cpp \
   forks_csv.cpp \
+  graphene.cpp \
   httprpc.cpp \
   httpserver.cpp \
   iblt.cpp \
