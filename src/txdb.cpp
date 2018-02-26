@@ -261,6 +261,7 @@ CBlockTreeDB::CBlockTreeDB(size_t nCacheSize, string folder, bool fMemory, bool 
 {
 }
 
+size_t CCoinsViewDB::TotalWriteBufferSize() const { return db.TotalWriteBufferSize(); }
 bool CBlockTreeDB::ReadBlockFileInfo(int nFile, CBlockFileInfo &info)
 {
     return Read(make_pair(DB_BLOCK_FILES, nFile), info);
