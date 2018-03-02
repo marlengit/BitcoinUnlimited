@@ -40,6 +40,9 @@ using namespace std;
 extern CTweak<unsigned int> maxBlocksInTransitPerPeer;
 extern CTweak<unsigned int> blockDownloadWindow;
 
+extern CTweak<unsigned int> maxBlocksInTransitPerPeer;
+extern CTweak<unsigned int> blockDownloadWindow;
+
 // Request management
 extern CRequestManager requester;
 

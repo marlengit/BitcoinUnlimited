@@ -144,7 +144,13 @@ protected:
     // Request a single block.
     bool RequestBlock(CNode *pfrom, CInv obj);
 
+    // Request a single block.
+    bool RequestBlock(CNode *pfrom, CInv obj);
+
 public:
+    // Number of peers from which we're downloading blocks.
+    int nPeersWithValidatedDownloads = 0;
+
     CRequestManager();
 
     // How many outbound nodes are we connected to.
