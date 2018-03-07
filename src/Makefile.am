@@ -136,6 +136,7 @@ BITCOIN_CORE_H = \
   forks_csv.h \
   fs.h \
   graphene.h \
+  graphene_set.h \
   httprpc.h \
   httpserver.h \
   iblt.h \
