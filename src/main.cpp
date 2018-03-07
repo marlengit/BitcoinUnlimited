@@ -1649,7 +1649,7 @@ struct UnknownForkData
 static UnknownForkData unknownFork[Consensus::MAX_VERSION_BITS_DEPLOYMENTS];
 // bip135 end
 
-static uint32_t GetBlockScriptFlags(const CBlockIndex* pindex, const Consensus::Params &consensusparams)
+static uint32_t GetBlockScriptFlags(const CBlockIndex *pindex, const Consensus::Params &consensusparams)
 {
     AssertLockHeld(cs_main);
 
