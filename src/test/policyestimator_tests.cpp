@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(BlockPolicyEstimates)
     // Estimates should still not be below original
     for (int j = 0; j < 10; j++)
     {
-        while(txHashes[j].size())
+        while (txHashes[j].size())
         {
             CTransactionRef ptx = mpool.get(txHashes[j].back());
             if (ptx)

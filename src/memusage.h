@@ -73,14 +73,14 @@ static inline size_t MallocUsage(size_t alloc)
 
 // STL data structures
 
-template<typename X>
+template <typename X>
 struct stl_tree_node
 {
 private:
     int color;
-    void* parent;
-    void* left;
-    void* right;
+    void *parent;
+    void *left;
+    void *right;
     X x;
 };
 
