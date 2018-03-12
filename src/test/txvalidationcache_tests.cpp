@@ -7,7 +7,6 @@
 #include "key.h"
 #include "main.h"
 #include "miner.h"
-#include "txorphanpool.h"
 #include "parallel.h"
 #include "pubkey.h"
 #include "random.h"
