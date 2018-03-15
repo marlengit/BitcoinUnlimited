@@ -1493,6 +1493,7 @@ BOOST_AUTO_TEST_CASE(script_datasigverify)
     vector<vector<unsigned char> > stack;
     ScriptError serror;
     BaseSignatureChecker sigChecker;
+    BOOST_CHECK(condScript.GetSigOpCount(true) == 1);
     BOOST_CHECK(EvalScript(stack, proveScript, 0, sigChecker, &serror, nullptr));
 
     enableDataSigVerify = false;

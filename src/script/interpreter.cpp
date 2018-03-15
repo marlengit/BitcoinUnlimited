@@ -15,6 +15,7 @@
 #include "uint256.h"
 
 const std::string strMessageMagic = "Bitcoin Signed Message:\n";
+bool enableDataSigVerify = false;
 
 using namespace std;
 
