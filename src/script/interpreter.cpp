@@ -381,9 +381,6 @@ bool EvalScript(vector<vector<unsigned char> > &stack,
             if (IsOpcodeDisabled(opcode, flags))
             {
                 return set_error(serror, SCRIPT_ERR_DISABLED_OPCODE);
-
-            default:
-                break;
             }
 
             if (fExec && 0 <= opcode && opcode <= OP_PUSHDATA4)
