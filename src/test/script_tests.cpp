@@ -415,7 +415,8 @@ std::string JSONPrettyPrint(const UniValue &univalue)
 }
 }
 
-BOOST_AUTO_TEST_CASE(script_build) {
+BOOST_AUTO_TEST_CASE(script_build)
+{
     const KeyData keys;
 
     std::vector<TestBuilder> tests;
