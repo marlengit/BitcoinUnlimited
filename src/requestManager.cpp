@@ -591,6 +591,19 @@ void CRequestManager::ResetLastBlockRequestTime(const uint256 &hash)
     }
 }
 
+void CRequestManager::ResetLastRequestTime(const uint256 &hash)
+{
+    LOCK(cs_objDownloader);
+    OdMap::iterator itemIter = sendBlkIter;
+    itemIter = mapBlkInfo.find(hash);
+    if (itemIter != mapBlkInfo.end())
+    {
+        CUnknownObj &item = itemIter->second;
+        item.outstandingReqs--;
+        item.lastRequestTime = 0;
+    }
+}
+
 void CRequestManager::SendRequests()
 {
     int64_t now = 0;
