@@ -927,6 +927,31 @@
     "P2SH,STRICTENC,MONOLITH_OPCODES", "PUSH_SIZE", "CAT oversized result"
 ],
 
+["SPLIT"],
+["", "SPLIT", "P2SH,STRICTENC,MONOLITH_OPCODES", "INVALID_STACK_OPERATION", "SPLIT, empty stack"],
+["'a'", "SPLIT", "P2SH,STRICTENC,MONOLITH_OPCODES", "INVALID_STACK_OPERATION", "SPLIT, one parameter"],
+["'abcdef' 3", "SPLIT 'def' EQUALVERIFY 'abc' EQUAL", "P2SH,STRICTENC,MONOLITH_OPCODES", "OK"],
+["'' 0", "SPLIT '' EQUALVERIFY '' EQUAL", "P2SH,STRICTENC,MONOLITH_OPCODES", "OK", "SPLIT, empty string"],
+["'abc' 0", "SPLIT 'abc' EQUALVERIFY '' EQUAL", "P2SH,STRICTENC,MONOLITH_OPCODES", "OK", "SPLIT, boundary condition"],
+["'abc' 3", "SPLIT '' EQUALVERIFY 'abc' EQUAL", "P2SH,STRICTENC,MONOLITH_OPCODES", "OK", "SPLIT, boundary condition"],
+["'abc' 4", "SPLIT", "P2SH,STRICTENC,MONOLITH_OPCODES", "SPLIT_RANGE", "SPLIT, out of bounds"],
+["'abc' -1", "SPLIT", "P2SH,STRICTENC,MONOLITH_OPCODES", "SPLIT_RANGE", "SPLIT, out of bounds"],
+[
+    "'zngyivniryrgefgnvqwfwqplmramujzilzyrsdvinxfkfmuowdpuzycnzbupwwpzrfxsbyrhdlsyixyzysodseayvvrtbsfxtikrjwkbduulrjyjlwlaigomhyohsukawdwbrpuacdijzzgxhataguajvuopuktvtklwhsxqvzzfttpdgnxtnbpsiqecxurlczqmoxznlsuejvneiyejetcxlblzrydscnrbydnqytorstjtuzlbbtbyzfiniuehbisqnqhvexylhohjiyiknzgjowvobsrwcxyfowqcvakgdolwpltfcxtrhuysrrvtprzpsucgogsjapdkrbobpxccqgkdumskaleycwsbkabdkuukqiyizceduplmauszwjdzptvmthxocwrignxjogxsvrsjrrlecvdmazlpfkgmskiqqitrevuwiisvpxvkeypzaqjwwiozvmahmtvtjpbolwrymvzfstopzcexalirwbbcqgjvfjfuirrcnlgcfyqnafhh'",
+    "145 SPLIT 'ataguajvuopuktvtklwhsxqvzzfttpdgnxtnbpsiqecxurlczqmoxznlsuejvneiyejetcxlblzrydscnrbydnqytorstjtuzlbbtbyzfiniuehbisqnqhvexylhohjiyiknzgjowvobsrwcxyfowqcvakgdolwpltfcxtrhuysrrvtprzpsucgogsjapdkrbobpxccqgkdumskaleycwsbkabdkuukqiyizceduplmauszwjdzptvmthxocwrignxjogxsvrsjrrlecvdmazlpfkgmskiqqitrevuwiisvpxvkeypzaqjwwiozvmahmtvtjpbolwrymvzfstopzcexalirwbbcqgjvfjfuirrcnlgcfyqnafhh' EQUALVERIFY 'zngyivniryrgefgnvqwfwqplmramujzilzyrsdvinxfkfmuowdpuzycnzbupwwpzrfxsbyrhdlsyixyzysodseayvvrtbsfxtikrjwkbduulrjyjlwlaigomhyohsukawdwbrpuacdijzzgxh' EQUAL",
+    "P2SH,STRICTENC,MONOLITH_OPCODES", "OK", "SPLIT, maximum length"
+],
+[
+    "'zngyivniryrgefgnvqwfwqplmramujzilzyrsdvinxfkfmuowdpuzycnzbupwwpzrfxsbyrhdlsyixyzysodseayvvrtbsfxtikrjwkbduulrjyjlwlaigomhyohsukawdwbrpuacdijzzgxhataguajvuopuktvtklwhsxqvzzfttpdgnxtnbpsiqecxurlczqmoxznlsuejvneiyejetcxlblzrydscnrbydnqytorstjtuzlbbtbyzfiniuehbisqnqhvexylhohjiyiknzgjowvobsrwcxyfowqcvakgdolwpltfcxtrhuysrrvtprzpsucgogsjapdkrbobpxccqgkdumskaleycwsbkabdkuukqiyizceduplmauszwjdzptvmthxocwrignxjogxsvrsjrrlecvdmazlpfkgmskiqqitrevuwiisvpxvkeypzaqjwwiozvmahmtvtjpbolwrymvzfstopzcexalirwbbcqgjvfjfuirrcnlgcfyqnafhh'",
+    "0 SPLIT 'zngyivniryrgefgnvqwfwqplmramujzilzyrsdvinxfkfmuowdpuzycnzbupwwpzrfxsbyrhdlsyixyzysodseayvvrtbsfxtikrjwkbduulrjyjlwlaigomhyohsukawdwbrpuacdijzzgxhataguajvuopuktvtklwhsxqvzzfttpdgnxtnbpsiqecxurlczqmoxznlsuejvneiyejetcxlblzrydscnrbydnqytorstjtuzlbbtbyzfiniuehbisqnqhvexylhohjiyiknzgjowvobsrwcxyfowqcvakgdolwpltfcxtrhuysrrvtprzpsucgogsjapdkrbobpxccqgkdumskaleycwsbkabdkuukqiyizceduplmauszwjdzptvmthxocwrignxjogxsvrsjrrlecvdmazlpfkgmskiqqitrevuwiisvpxvkeypzaqjwwiozvmahmtvtjpbolwrymvzfstopzcexalirwbbcqgjvfjfuirrcnlgcfyqnafhh' EQUALVERIFY '' EQUAL",
+    "P2SH,STRICTENC,MONOLITH_OPCODES", "OK", "SPLIT, maximum length with empty string"
+],
+[
+    "'zngyivniryrgefgnvqwfwqplmramujzilzyrsdvinxfkfmuowdpuzycnzbupwwpzrfxsbyrhdlsyixyzysodseayvvrtbsfxtikrjwkbduulrjyjlwlaigomhyohsukawdwbrpuacdijzzgxhataguajvuopuktvtklwhsxqvzzfttpdgnxtnbpsiqecxurlczqmoxznlsuejvneiyejetcxlblzrydscnrbydnqytorstjtuzlbbtbyzfiniuehbisqnqhvexylhohjiyiknzgjowvobsrwcxyfowqcvakgdolwpltfcxtrhuysrrvtprzpsucgogsjapdkrbobpxccqgkdumskaleycwsbkabdkuukqiyizceduplmauszwjdzptvmthxocwrignxjogxsvrsjrrlecvdmazlpfkgmskiqqitrevuwiisvpxvkeypzaqjwwiozvmahmtvtjpbolwrymvzfstopzcexalirwbbcqgjvfjfuirrcnlgcfyqnafhh'",
+    "520 SPLIT '' EQUALVERIFY 'zngyivniryrgefgnvqwfwqplmramujzilzyrsdvinxfkfmuowdpuzycnzbupwwpzrfxsbyrhdlsyixyzysodseayvvrtbsfxtikrjwkbduulrjyjlwlaigomhyohsukawdwbrpuacdijzzgxhataguajvuopuktvtklwhsxqvzzfttpdgnxtnbpsiqecxurlczqmoxznlsuejvneiyejetcxlblzrydscnrbydnqytorstjtuzlbbtbyzfiniuehbisqnqhvexylhohjiyiknzgjowvobsrwcxyfowqcvakgdolwpltfcxtrhuysrrvtprzpsucgogsjapdkrbobpxccqgkdumskaleycwsbkabdkuukqiyizceduplmauszwjdzptvmthxocwrignxjogxsvrsjrrlecvdmazlpfkgmskiqqitrevuwiisvpxvkeypzaqjwwiozvmahmtvtjpbolwrymvzfstopzcexalirwbbcqgjvfjfuirrcnlgcfyqnafhh' EQUAL",
+    "P2SH,STRICTENC,MONOLITH_OPCODES", "OK", "SPLIT, maximum length with empty string"
+],
+
 ["NUM2BIN"],
 ["", "NUM2BIN 0 EQUAL", "P2SH,STRICTENC,MONOLITH_OPCODES", "INVALID_STACK_OPERATION", "NUM2BIN, empty stack"],
 ["0", "NUM2BIN 0 EQUAL", "P2SH,STRICTENC,MONOLITH_OPCODES", "INVALID_STACK_OPERATION", "NUM2BIN, one parameter"],
