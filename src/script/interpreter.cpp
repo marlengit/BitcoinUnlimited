@@ -1326,6 +1326,28 @@ bool EvalScript(vector<vector<unsigned char> > &stack,
                 break;
 
                 //
+                // Byte string operations
+                //
+                case OP_CAT:
+                {
+                    // (x1 x2 -- out)
+                    if (stack.size() < 2)
+                    {
+                        return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+                    }
+                    valtype &vch1 = stacktop(-2);
+                    valtype &vch2 = stacktop(-1);
+                    if (vch1.size() + vch2.size() > MAX_SCRIPT_ELEMENT_SIZE)
+                    {
+                        return set_error(serror, SCRIPT_ERR_PUSH_SIZE);
+                    }
+                    vch1.insert(vch1.end(), vch2.begin(), vch2.end());
+                    popstack(stack);
+                }
+                break;
+
+
+                //
                 // Conversion operations
                 //
                 case OP_NUM2BIN:
