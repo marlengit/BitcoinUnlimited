@@ -1697,6 +1697,13 @@ static uint32_t GetBlockScriptFlags(const CBlockIndex *pindex, const Consensus::
         flags |= SCRIPT_VERIFY_NULLFAIL;
     }
 
+    // The monolith HF enable a set of opcodes.
+    if (IsMonolithEnabled(consensusparams, pindex->pprev))
+    {
+        flags |= SCRIPT_ENABLE_MONOLITH_OPCODES;
+    }
+
+
     return flags;
 }
 
