@@ -1697,10 +1697,10 @@ static uint32_t GetBlockScriptFlags(const CBlockIndex *pindex, const Consensus::
         flags |= SCRIPT_VERIFY_NULLFAIL;
     }
 
-    // The monolith HF enable a set of opcodes.
-    if (IsMonolithEnabled(consensusparams, pindex->pprev))
+    // The May 15, 2018 HF enable a set of opcodes.
+    if (IsMay152018Enabled(consensusparams, pindex->pprev))
     {
-        flags |= SCRIPT_ENABLE_MONOLITH_OPCODES;
+        flags |= SCRIPT_ENABLE_MAY152018_OPCODES;
     }
 
 
