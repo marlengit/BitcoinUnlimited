@@ -12,6 +12,7 @@
 #include "script/interpreter.h"
 #include "hash.h"
 #include "key.h"
+#include "script/interpreter.h"
 
 #include <vector>
 
