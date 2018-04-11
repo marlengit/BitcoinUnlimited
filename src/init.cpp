@@ -25,7 +25,7 @@
 #include "forks_csv.h"
 #include "fs.h"
 #include "forks_csv.h"
-#include "httpserver.h"
+#include "fs.h"
 #include "httprpc.h"
 #include "httpserver.h"
 #include "httpserver.h"

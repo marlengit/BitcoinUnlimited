@@ -217,20 +217,24 @@ ThresholdState AbstractThresholdConditionChecker::GetStateFor(const CBlockIndex 
         }
         case THRESHOLD_STARTED:
         {
-            if (pindexPrev->GetMedianTimePast() >= nTimeTimeout) {
+            if (pindexPrev->GetMedianTimePast() >= nTimeTimeout)
+            {
                 stateNext = THRESHOLD_FAILED;
                 break;
             }
             // We need to count
-            const CBlockIndex* pindexCount = pindexPrev;
+            const CBlockIndex *pindexCount = pindexPrev;
             int count = 0;
-            for (int i = 0; i < nPeriod; i++) {
-                if (Condition(pindexCount, params)) {
+            for (int i = 0; i < nPeriod; i++)
+            {
+                if (Condition(pindexCount, params))
+                {
                     count++;
                 }
                 pindexCount = pindexCount->pprev;
             }
-            if (count >= nThreshold) {
+            if (count >= nThreshold)
+            {
                 stateNext = THRESHOLD_LOCKED_IN;
                 // bip135: make a note of lock-in time & height
                 // this will be used for assessing grace period conditions.
