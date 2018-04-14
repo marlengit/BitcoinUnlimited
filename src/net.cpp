@@ -2191,6 +2191,10 @@ void ThreadMessageHandler()
             pnode->Release();
         }
 
+        // From the request manager, make requests for transactions and blocks. We do this before potentially
+        // sleeping in the step below so as to allow requests to return during the sleep time.
+        requester.SendRequests();
+
         if (fSleep)
         {
             messageHandlerCondition.timed_wait(
