@@ -211,6 +211,7 @@ Thanks to everyone who directly contributed to this release:
 - awemany
 - Justaphf
 - Peter Tschipper
+- Pieter Wuille
 - Samuel Kwok
 - Tom Harding
 
@@ -229,4 +230,3 @@ Following all the indirect contributors whose work has been imported via the abo
 - Jason B. Cox
 - John Newbery
 - joshuayabut
-- Pieter Wuille
