@@ -589,6 +589,19 @@ void CRequestManager::ResetLastBlockRequestTime(const uint256 &hash)
         item.outstandingReqs--;
         item.lastRequestTime = 0;
     }
+    else
+    {
+        std::vector<CInv> vToFetch;
+        inv2.type = MSG_BLOCK;
+        vToFetch.push_back(inv2);
+        MarkBlockAsInFlight(pfrom->GetId(), obj.hash, chainParams.GetConsensus());
+        pfrom->PushMessage(NetMsgType::GETDATA, vToFetch);
+        LOG(THIN, "Requesting Regular Block %s from peer %s (%d)\n", inv2.hash.ToString(), pfrom->addrName.c_str(),
+            pfrom->id);
+        return true;
+    }
+    return false; // no block was requested
+    // BUIP010 Xtreme Thinblocks: end section
 }
 
 void CRequestManager::ResetLastRequestTime(const uint256 &hash)
