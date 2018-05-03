@@ -520,6 +520,16 @@ bool IsMay152018Next(const Consensus::Params &consensusparams, const CBlockIndex
     return pindexPrev->forkAtNextBlock(miningForkTime.Value());
 }
 
+bool IsMay152018Next(const Consensus::Params &consensusparams, const CBlockIndex *pindexPrev)
+{
+    if (pindexPrev == nullptr)
+    {
+        return false;
+    }
+
+    return pindexPrev->forkAtNextBlock(miningForkTime.value);
+}
+
 
 bool AreFreeTxnsDisallowed()
 {

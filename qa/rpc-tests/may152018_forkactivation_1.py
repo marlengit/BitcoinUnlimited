@@ -2,15 +2,17 @@
 # Copyright (c) 2018 The Bitcoin Unlimited developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-import test_framework.loginit
+
 import time
 import sys
 if sys.version_info[0] < 3:
     raise "Use Python 3"
 import logging
+logging.basicConfig(format='%(asctime)s.%(levelname)s: %(message)s', level=logging.INFO, stream=sys.stdout)
 
 from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
+
 
 class ForkTest (BitcoinTestFramework):
 
@@ -49,9 +51,7 @@ class ForkTest (BitcoinTestFramework):
 
         # Not forking yet
 
-        # since we change the default for OP_RETURN after the fork happened,
-        # the mining.dataCarrierSize should be equal to 223.
-        assert(self.nodes[0].get("mining.dataCarrierSize")["mining.dataCarrierSize"] == 223)
+        assert(self.nodes[0].get("mining.dataCarrierSize")["mining.dataCarrierSize"] == 83)
 
         assert_equal(ebVal, self.nodes[0].get("net.excessiveBlock"))
         assert_equal(ebVal, self.nodes[1].get("net.excessiveBlock"))
@@ -79,6 +79,9 @@ class ForkTest (BitcoinTestFramework):
         d = self.nodes[1].get("mining.*lockSize")
         assert(d["mining.blockSize"] >= d["mining.forkBlockSize"])
 
+        # check that the datacarrier size is updated
+        assert(self.nodes[0].get("mining.dataCarrierSize")["mining.dataCarrierSize"] == 223)
+
         self.nodes[0].set("net.excessiveBlock=20000000")
         self.nodes[0].set("mining.blockSize=2000000")
         self.nodes[0].set("mining.dataCarrierSize=400")
@@ -93,14 +96,13 @@ class ForkTest (BitcoinTestFramework):
         assert d["mining.dataCarrierSize"] == 400  # Shouldn't be changed because > the min
 
         self.nodes[0].set("net.excessiveBlock=64000000")
-        expectException(lambda: self.nodes[0].set("mining.dataCarrierSize=100"),
-                        JSONRPCException, "Invalid Value. Data Carrier minimum size has to be greater of equal to 223 bytes")
-
+        self.nodes[0].set("mining.dataCarrierSize=100")
         self.nodes[1].generate(1)
         self.sync_blocks()
 
         d = self.nodes[0].get("*")
         assert d["net.excessiveBlock"] == 64000000  # Shouldn't be changed because the setting we made was > the min
+        assert d["mining.dataCarrierSize"] == 223  # Should be changed because < the min
 
         ###############################################################
         # Stop nodes and restart with the forktime in the past
@@ -129,6 +131,9 @@ class ForkTest (BitcoinTestFramework):
         d = self.nodes[1].get("mining.*lockSize")
         assert(d["mining.blockSize"] == 2000000)
 
+        # check that the datacarrier size is still updated
+        assert(self.nodes[0].get("mining.dataCarrierSize")["mining.dataCarrierSize"] == 223)
+
 if __name__ == '__main__':
     ForkTest().main()
 
@@ -145,7 +150,7 @@ def Test():
     # "--srcdir=<out-of-source-build-dir>/debug/src"
     flags = []
     if os.path.isdir("/ramdisk/test"):  # execution is much faster if a ramdisk is used
-        flags.append("--tmppfx=/ramdisk/test")
+        flags.append("--tmpdir=/ramdisk/test")
 
     here = os.path.dirname(os.path.abspath(__file__))
     if not os.path.exists(os.path.abspath(here + "/../../src/bitcoind")):
