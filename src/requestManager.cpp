@@ -596,8 +596,7 @@ void CRequestManager::ResetLastBlockRequestTime(const uint256 &hash)
         vToFetch.push_back(inv2);
         MarkBlockAsInFlight(pfrom->GetId(), obj.hash, chainParams.GetConsensus());
         pfrom->PushMessage(NetMsgType::GETDATA, vToFetch);
-        LOG(THIN, "Requesting Regular Block %s from peer %s (%d)\n", inv2.hash.ToString(), pfrom->addrName.c_str(),
-            pfrom->id);
+        LOG(THIN, "Requesting Regular Block %s from peer %s\n", inv2.hash.ToString(), pfrom->GetLogName());
         return true;
     }
     return false; // no block was requested
