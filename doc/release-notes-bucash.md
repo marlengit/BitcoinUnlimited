@@ -9,7 +9,7 @@ Please report bugs using the issue tracker at github:
 
   <https://github.com/BitcoinUnlimited/BitcoinUnlimited/issues>
 
-This is a major release version based of Bitcoin Unlimited compatible
+This is a minor release version based of Bitcoin Unlimited compatible
 with the Bitcoin Cash specifications you could find here:
 
 https://github.com/bitcoincashorg/spec/blob/master/uahf-technical-spec.md (Aug 1st Protocol Upgrade, bucash 1.1.0.0)
