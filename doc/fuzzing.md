@@ -122,3 +122,17 @@ simply derive a class from `FuzzTest` or, alternatively, `FuzzTestNet` (in case 
 to read from a network-like CDataStream). Override the `run()` method and either use
 the `buffer` object or the `ds` object to retrieve the data for your test.
 
+The memory limit of 200MB above (`-m 200`) might be generous. If you suspect that code might
+have some memory leaks and you want to test for that specifically, try lowering the limit 
+until about just before fuzzing breaks every time.
+Further information can be found in the AFL documentation.
+
+
+Extending
+---------
+
+The code has been updated to be more easily extensible. In test_bitcoin_fuzzy.cpp, 
+simply derive a class from `FuzzTest` or, alternatively, `FuzzTestNet` (in case you want
+to read from a network-like CDataStream). Override the `run()` method and either use
+the `buffer` object or the `ds` object to retrieve the data for your test.
+
