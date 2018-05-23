@@ -331,6 +331,161 @@ static UniValue RPCSubmitSolution(const UniValue &solution, int &nblocks)
     return reply;
 }
 
+
+static CBlockHeader CpuMinerJsonToHeader(const UniValue &params)
+{
+    // Does not set hashMerkleRoot (Does not exist in Mining-Candidate params).
+    CBlockHeader blockheader;
+
+      // nVersion
+    blockheader.nVersion = std::stoi(params["version"].get_str());
+   
+    // hashPrevBlock
+    string tmpstr = params["prevhash"].get_str();
+    std::vector<unsigned char> vec = ParseHex(tmpstr);
+    std::reverse(vec.begin(), vec.end()); // sent reversed
+    blockheader.hashPrevBlock = uint256(vec);
+
+    // nTime:
+    blockheader.nTime = params["time"].get_int();
+
+    // nBits
+    {
+        std::stringstream ss;
+        ss << std::hex << params["nBits"].get_str();
+        ss >> blockheader.nBits;
+    }
+
+    return blockheader;
+}
+
+
+static void CalculateNextMerkleRoot(uint256 &merkle_root, uint256 &merkle_branch)
+{
+    // Append a branch to the root. Double SHA256 the whole thing:
+    uint256 hash;
+    CHash256()
+        .Write(merkle_root.begin(), merkle_root.size())
+        .Write(merkle_branch.begin(), merkle_branch.size())
+        .Finalize(hash.begin());
+    merkle_root = hash;
+}
+
+static uint256 CalculateMerkleRoot(uint256 &coinbase_hash, std::vector<uint256> merklebranches)
+{
+    uint256 merkle_root = coinbase_hash;
+    for (unsigned int i = 0; i < merklebranches.size(); i++)
+    {
+        CalculateNextMerkleRoot(merkle_root, merklebranches[i]);
+    }
+    return merkle_root;
+}
+
+static bool CpuMineBlockHasher(CBlockHeader *pblock, vector<unsigned char>& coinbaseBytes, std::vector<uint256> merklebranches)
+{
+    uint32_t nExtraNonce = std::rand();
+    uint32_t nNonce = 0;
+    arith_uint256 hashTarget = arith_uint256().SetCompact(pblock->nBits);
+    bool found = false;
+    int ntries = 10;
+    unsigned char *pbytes = (unsigned char *)&coinbaseBytes[0];
+
+    while (!found)
+    {   
+        //hashMerkleRoot:
+        {
+            ++nExtraNonce;
+            //48 - next in arr after Height. (Height in coinbase required for block.version=2):
+            *(unsigned int *)(pbytes + 48) = nExtraNonce; 
+            uint256 hash;
+            CHash256()
+                .Write(pbytes,coinbaseBytes.size())
+                .Finalize(hash.begin());
+            
+            pblock->hashMerkleRoot = CalculateMerkleRoot(hash, merklebranches);
+        }
+
+        //
+        // Search
+        //
+        uint256 hash;
+        while (!found)
+        {
+            // Check if something found
+            if (ScanHash(pblock, nNonce, &hash))
+            {
+                if (UintToArith256(hash) <= hashTarget)
+                {
+                    // Found a solution
+                    pblock->nNonce = nNonce;
+                    found = true;
+                    //printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
+
+                    break;
+                }
+                else
+                {
+                    if (ntries-- < 1)
+                    {
+                        return false; // Give up leave
+                    }
+                }
+            }
+        }
+    }
+
+    return found;
+}
+
+static UniValue CpuMineBlock(const UniValue &params, bool &found)
+{
+    UniValue tmp(UniValue::VOBJ);
+    UniValue ret(UniValue::VARR);
+    string tmpstr;
+    std::vector<uint256> merklebranches;
+    CBlockHeader header;
+    vector<unsigned char> coinbaseBytes(ParseHex(params["coinbase"].get_str()));
+
+    found = false;
+    
+    // re-create merkle branches:
+    {
+        UniValue uvMerklebranches = params["merklebranches"];
+        for (unsigned int i = 0; i < uvMerklebranches.size(); i++)
+        {
+            tmpstr = uvMerklebranches[i].get_str();
+            std::vector<unsigned char> mbr = ParseHex(tmpstr);
+            std::reverse(mbr.begin(), mbr.end());
+            merklebranches.push_back(uint256(mbr));
+        }
+    }
+
+    header = CpuMinerJsonToHeader(params);
+    header.nNonce = std::rand();
+ 
+    //printf("searching...target: %s\n",arith_uint256().SetCompact(header.nBits).GetHex().c_str());
+
+    int64_t start = GetTime(); 
+    while ((GetTime() < start + (NEW_CANDIDATE_INTERVAL*1000))&&!found)
+    {
+        found = CpuMineBlockHasher(&header, coinbaseBytes, merklebranches);
+    }
+
+    // Leave if not found:
+    if (!found)
+        return ret;
+
+    tmpstr = HexStr(coinbaseBytes.begin(), coinbaseBytes.end());
+    tmp.push_back(Pair("coinbase", tmpstr));
+    tmp.push_back(Pair("id", params["id"]));
+    //tmp.push_back(Pair("time",UniValue(header.nTime))); //Using 'bitcoind' time. 
+    tmp.push_back(Pair("nonce", UniValue(header.nNonce)));    
+    ret.push_back(UniValue(tmp.write()));
+
+    return ret;
+}
+
+
 int CpuMiner(void)
 {
     int searchDuration = GetArg("-duration", 30);
