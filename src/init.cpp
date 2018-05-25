@@ -1203,9 +1203,6 @@ bool AppInit2(Config &config, boost::thread_group &threadGroup, CScheduler &sche
         if (miningForkEB.value > excessiveBlockSize)
             excessiveBlockSize = miningForkEB.value;
         settingsToUserAgentString();
-        // Bump OP_RETURN size:
-        if (nMaxDatacarrierBytes < MAX_OP_RETURN_MAY2018)
-            nMaxDatacarrierBytes = MAX_OP_RETURN_MAY2018;
     }
 
 // ********************************************************* Step 7: load wallet
