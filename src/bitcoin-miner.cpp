@@ -464,6 +464,7 @@ static UniValue CpuMineBlock(const UniValue &params, bool &found)
     header.nNonce = std::rand();
  
     //printf("searching...target: %s\n",arith_uint256().SetCompact(header.nBits).GetHex().c_str());
+    printf("Mining...\n");
 
     int64_t start = GetTime(); 
     while ((GetTime() < start + (NEW_CANDIDATE_INTERVAL*1000))&&!found)
@@ -485,6 +486,41 @@ static UniValue CpuMineBlock(const UniValue &params, bool &found)
     return ret;
 }
 
+
+static UniValue RPCSubmitSolution(UniValue& solution,int& nblocks)
+{
+    //Throws exceptions
+    UniValue reply = CallRPC("submitminingsolution",  solution); 
+    const UniValue &error = find_value(reply, "error");
+
+    if (!error.isNull())
+        return reply; //Error 
+              
+    UniValue result= find_value(reply, "result");
+
+    if (result.isNull())
+        return reply; //Error
+
+    bool accepted = result["accepted"].get_bool();                       
+    string message = result["message"].get_str();
+    
+    if(!accepted)
+    {
+        fprintf(stderr,"Block Candidate rejected. Error: %s\n",message.c_str());    
+    }
+    else
+    {
+        printf("Block Candidate accepted.\n");
+    }
+
+    //Will not get here if Exceptions above:
+    if(nblocks>0)
+        nblocks--; //Processed a block
+
+    solution.setNull();
+
+    return reply;
+}
 
 int CpuMiner(void)
 {
