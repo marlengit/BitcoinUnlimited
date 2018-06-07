@@ -384,7 +384,7 @@ static uint256 CalculateMerkleRoot(uint256 &coinbase_hash, std::vector<uint256> 
 static bool CpuMineBlockHasher(CBlockHeader *pblock, vector<unsigned char>& coinbaseBytes, std::vector<uint256> merklebranches)
 {
     uint32_t nExtraNonce = std::rand();
-    uint32_t nNonce = 0;
+    uint32_t nNonce = pblock->nNonce;
     arith_uint256 hashTarget = arith_uint256().SetCompact(pblock->nBits);
     bool found = false;
     int ntries = 10;
@@ -419,14 +419,14 @@ static bool CpuMineBlockHasher(CBlockHeader *pblock, vector<unsigned char>& coin
                     // Found a solution
                     pblock->nNonce = nNonce;
                     found = true;
-                    //printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
-
+                    printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
                     break;
                 }
                 else
                 {
                     if (ntries-- < 1)
                     {
+                        pblock->nNonce = nNonce; // report the last nonce checked for accounting
                         return false; // Give up leave
                     }
                 }
@@ -437,7 +437,26 @@ static bool CpuMineBlockHasher(CBlockHeader *pblock, vector<unsigned char>& coin
     return found;
 }
 
-static UniValue CpuMineBlock(const UniValue &params, bool &found)
+double GetDifficulty(uint64_t nBits)
+{
+    int nShift = (nBits >> 24) & 0xff;
+
+    double dDiff = (double)0x0000ffff / (double)(nBits & 0x00ffffff);
+
+    while (nShift < 29)
+    {
+        dDiff *= 256.0;
+        nShift++;
+    }
+    while (nShift > 29)
+    {
+        dDiff /= 256.0;
+        nShift--;
+    }
+    return dDiff;
+}
+
+static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params, bool &found)
 {
     UniValue tmp(UniValue::VOBJ);
     UniValue ret(UniValue::VARR);
@@ -461,26 +480,31 @@ static UniValue CpuMineBlock(const UniValue &params, bool &found)
     }
 
     header = CpuMinerJsonToHeader(params);
-    header.nNonce = std::rand();
+    uint32_t startNonce = header.nNonce = std::rand();
  
     //printf("searching...target: %s\n",arith_uint256().SetCompact(header.nBits).GetHex().c_str());
-    printf("Mining...\n");
+    printf("Mining: id: %lx parent: %s bits: %x difficulty: %3.2f time: %d\n", (uint64_t) params["id"].get_int64(), header.hashPrevBlock.ToString().c_str() , header.nBits, GetDifficulty(header.nBits), header.nTime);
 
     int64_t start = GetTime(); 
-    while ((GetTime() < start + (NEW_CANDIDATE_INTERVAL*1000))&&!found)
+    while ((GetTime() < start + searchDuration)&&!found)
     {
         found = CpuMineBlockHasher(&header, coinbaseBytes, merklebranches);
     }
 
     // Leave if not found:
     if (!found)
+    {
+        printf("Checked %d possibilities\n", header.nNonce - startNonce);
         return ret;
+    }
+
+    printf("Solution! Checked %d possibilities\n", header.nNonce - startNonce);
 
     tmpstr = HexStr(coinbaseBytes.begin(), coinbaseBytes.end());
     tmp.push_back(Pair("coinbase", tmpstr));
     tmp.push_back(Pair("id", params["id"]));
-    //tmp.push_back(Pair("time",UniValue(header.nTime))); //Using 'bitcoind' time. 
-    tmp.push_back(Pair("nonce", UniValue(header.nNonce)));    
+    tmp.push_back(Pair("time",UniValue(header.nTime))); //Using 'bitcoind' time. 
+    tmp.push_back(Pair("nonce", UniValue(header.nNonce)));
     ret.push_back(UniValue(tmp.write()));
 
     return ret;
