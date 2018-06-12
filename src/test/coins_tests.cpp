@@ -240,8 +240,19 @@ BOOST_AUTO_TEST_CASE(coins_cache_simulation_test)
                 }
                 else
                 {
-                    BOOST_CHECK(stack.back()->HaveCoinInCache(it->first));
-                    found_an_entry = true;
+                    LOCK(stack.back()->cs_utxo);
+                    const Coin &coin = stack.back()->AccessCoin(it->first);
+                    BOOST_CHECK(have == !coin.IsSpent());
+                    BOOST_CHECK(coin == it->second);
+                    if (coin.IsSpent())
+                    {
+                        missed_an_entry = true;
+                    }
+                    else
+                    {
+                        BOOST_CHECK(stack.back()->HaveCoinInCache(it->first));
+                        found_an_entry = true;
+                    }
                 }
             }
             for (const CCoinsViewCacheTest *test : stack)
