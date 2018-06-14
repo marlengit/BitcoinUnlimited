@@ -11,6 +11,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <set>
 
 namespace AllowedArgs
 {
@@ -117,7 +118,7 @@ public:
 class BitcoinCli : public AllowedArgs
 {
 public:
-    BitcoinCli(bool miner = false); // use true if bitcoin-miner program
+    BitcoinCli();
 };
 
 class Bitcoind : public AllowedArgs
