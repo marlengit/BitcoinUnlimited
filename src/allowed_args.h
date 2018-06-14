@@ -117,7 +117,7 @@ public:
 class BitcoinCli : public AllowedArgs
 {
 public:
-    BitcoinCli();
+    BitcoinCli(bool miner = false); // use true if bitcoin-miner program
 };
 
 class Bitcoind : public AllowedArgs

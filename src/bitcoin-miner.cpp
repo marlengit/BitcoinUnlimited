@@ -480,6 +480,15 @@ static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params
     }
 
     header = CpuMinerJsonToHeader(params);
+ 
+    // Set the version (only to test):
+    {
+        int blockversion = GetArg("-blockversion", header.nVersion);
+        if(blockversion!= header.nVersion)
+            printf("Force header.nVersion to %d\n",blockversion);
+        header.nVersion = blockversion;
+    }
+
     uint32_t startNonce = header.nNonce = std::rand();
  
     //printf("searching...target: %s\n",arith_uint256().SetCompact(header.nBits).GetHex().c_str());
@@ -488,6 +497,7 @@ static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params
     int64_t start = GetTime(); 
     while ((GetTime() < start + searchDuration)&&!found)
     {
+        header.nTime = (header.nTime < GetTime()) ? GetTime(): header.nTime;
         found = CpuMineBlockHasher(&header, coinbaseBytes, merklebranches);
     }
 
@@ -503,8 +513,9 @@ static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params
     tmpstr = HexStr(coinbaseBytes.begin(), coinbaseBytes.end());
     tmp.push_back(Pair("coinbase", tmpstr));
     tmp.push_back(Pair("id", params["id"]));
-    tmp.push_back(Pair("time",UniValue(header.nTime))); //Using 'bitcoind' time. 
+    tmp.push_back(Pair("time",UniValue(header.nTime))); //Optional. We have changed so must send.
     tmp.push_back(Pair("nonce", UniValue(header.nNonce)));
+    tmp.push_back(Pair("blockversion", UniValue(header.nVersion))); //Optional. We may have changed so sending.
     ret.push_back(UniValue(tmp.write()));
 
     return ret;

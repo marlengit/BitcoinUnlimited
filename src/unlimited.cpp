@@ -1821,6 +1821,11 @@ UniValue submitminingsolution(const UniValue &params, bool fHelp)
     {
         block.nVersion = version.get_int(); // version signed 32 bit int
     }
+    catch (const std::exception &e)
+    {
+        delete coinbase;
+        throw;
+    }
 
     // Coinbase:
     CTransaction coinbase;
