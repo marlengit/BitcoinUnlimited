@@ -337,9 +337,9 @@ static CBlockHeader CpuMinerJsonToHeader(const UniValue &params)
     // Does not set hashMerkleRoot (Does not exist in Mining-Candidate params).
     CBlockHeader blockheader;
 
-      // nVersion
-    blockheader.nVersion = std::stoi(params["version"].get_str());
-   
+    // nVersion
+    blockheader.nVersion = params["version"].get_int();
+
     // hashPrevBlock
     string tmpstr = params["prevhash"].get_str();
     std::vector<unsigned char> vec = ParseHex(tmpstr);
@@ -381,7 +381,9 @@ static uint256 CalculateMerkleRoot(uint256 &coinbase_hash, std::vector<uint256> 
     return merkle_root;
 }
 
-static bool CpuMineBlockHasher(CBlockHeader *pblock, vector<unsigned char>& coinbaseBytes, std::vector<uint256> merklebranches)
+static bool CpuMineBlockHasher(CBlockHeader *pblock,
+    vector<unsigned char> &coinbaseBytes,
+    std::vector<uint256> merklebranches)
 {
     uint32_t nExtraNonce = std::rand();
     uint32_t nNonce = pblock->nNonce;
@@ -391,17 +393,15 @@ static bool CpuMineBlockHasher(CBlockHeader *pblock, vector<unsigned char>& coin
     unsigned char *pbytes = (unsigned char *)&coinbaseBytes[0];
 
     while (!found)
-    {   
-        //hashMerkleRoot:
+    {
+        // hashMerkleRoot:
         {
             ++nExtraNonce;
-            //48 - next in arr after Height. (Height in coinbase required for block.version=2):
-            *(unsigned int *)(pbytes + 48) = nExtraNonce; 
+            // 48 - next in arr after Height. (Height in coinbase required for block.version=2):
+            *(unsigned int *)(pbytes + 48) = nExtraNonce;
             uint256 hash;
-            CHash256()
-                .Write(pbytes,coinbaseBytes.size())
-                .Finalize(hash.begin());
-            
+            CHash256().Write(pbytes, coinbaseBytes.size()).Finalize(hash.begin());
+
             pblock->hashMerkleRoot = CalculateMerkleRoot(hash, merklebranches);
         }
 
@@ -419,7 +419,8 @@ static bool CpuMineBlockHasher(CBlockHeader *pblock, vector<unsigned char>& coin
                     // Found a solution
                     pblock->nNonce = nNonce;
                     found = true;
-                    printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(), hashTarget.GetHex().c_str());
+                    printf("proof-of-work found  \n  hash: %s  \ntarget: %s\n", hash.GetHex().c_str(),
+                        hashTarget.GetHex().c_str());
                     break;
                 }
                 else
@@ -466,7 +467,7 @@ static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params
     vector<unsigned char> coinbaseBytes(ParseHex(params["coinbase"].get_str()));
 
     found = false;
-    
+
     // re-create merkle branches:
     {
         UniValue uvMerklebranches = params["merklebranches"];
@@ -480,24 +481,25 @@ static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params
     }
 
     header = CpuMinerJsonToHeader(params);
- 
+
     // Set the version (only to test):
     {
         int blockversion = GetArg("-blockversion", header.nVersion);
-        if(blockversion!= header.nVersion)
-            printf("Force header.nVersion to %d\n",blockversion);
+        if (blockversion != header.nVersion)
+            printf("Force header.nVersion to %d\n", blockversion);
         header.nVersion = blockversion;
     }
 
     uint32_t startNonce = header.nNonce = std::rand();
- 
-    //printf("searching...target: %s\n",arith_uint256().SetCompact(header.nBits).GetHex().c_str());
-    printf("Mining: id: %lx parent: %s bits: %x difficulty: %3.2f time: %d\n", (uint64_t) params["id"].get_int64(), header.hashPrevBlock.ToString().c_str() , header.nBits, GetDifficulty(header.nBits), header.nTime);
 
-    int64_t start = GetTime(); 
-    while ((GetTime() < start + searchDuration)&&!found)
+    // printf("searching...target: %s\n",arith_uint256().SetCompact(header.nBits).GetHex().c_str());
+    printf("Mining: id: %lx parent: %s bits: %x difficulty: %3.2f time: %d\n", (uint64_t)params["id"].get_int64(),
+        header.hashPrevBlock.ToString().c_str(), header.nBits, GetDifficulty(header.nBits), header.nTime);
+
+    int64_t start = GetTime();
+    while ((GetTime() < start + searchDuration) && !found)
     {
-        header.nTime = (header.nTime < GetTime()) ? GetTime(): header.nTime;
+        header.nTime = (header.nTime < GetTime()) ? GetTime() : header.nTime;
         found = CpuMineBlockHasher(&header, coinbaseBytes, merklebranches);
     }
 
@@ -513,44 +515,44 @@ static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params
     tmpstr = HexStr(coinbaseBytes.begin(), coinbaseBytes.end());
     tmp.push_back(Pair("coinbase", tmpstr));
     tmp.push_back(Pair("id", params["id"]));
-    tmp.push_back(Pair("time",UniValue(header.nTime))); //Optional. We have changed so must send.
+    tmp.push_back(Pair("time", UniValue(header.nTime))); // Optional. We have changed so must send.
     tmp.push_back(Pair("nonce", UniValue(header.nNonce)));
-    tmp.push_back(Pair("blockversion", UniValue(header.nVersion))); //Optional. We may have changed so sending.
+    tmp.push_back(Pair("version", UniValue(header.nVersion))); // Optional. We may have changed so sending.
     ret.push_back(UniValue(tmp.write()));
 
     return ret;
 }
 
 
-static UniValue RPCSubmitSolution(UniValue& solution,int& nblocks)
+static UniValue RPCSubmitSolution(UniValue &solution, int &nblocks)
 {
-    //Throws exceptions
-    UniValue reply = CallRPC("submitminingsolution",  solution); 
+    // Throws exceptions
+    UniValue reply = CallRPC("submitminingsolution", solution);
     const UniValue &error = find_value(reply, "error");
 
     if (!error.isNull())
-        return reply; //Error 
-              
-    UniValue result= find_value(reply, "result");
+        return reply; // Error
+
+    UniValue result = find_value(reply, "result");
 
     if (result.isNull())
-        return reply; //Error
+        return reply; // Error
 
-    bool accepted = result["accepted"].get_bool();                       
+    bool accepted = result["accepted"].get_bool();
     string message = result["message"].get_str();
-    
-    if(!accepted)
+
+    if (!accepted)
     {
-        fprintf(stderr,"Block Candidate rejected. Error: %s\n",message.c_str());    
+        fprintf(stderr, "Block Candidate rejected. Error: %s\n", message.c_str());
     }
     else
     {
         printf("Block Candidate accepted.\n");
     }
 
-    //Will not get here if Exceptions above:
-    if(nblocks>0)
-        nblocks--; //Processed a block
+    // Will not get here if Exceptions above:
+    if (nblocks > 0)
+        nblocks--; // Processed a block
 
     solution.setNull();
 

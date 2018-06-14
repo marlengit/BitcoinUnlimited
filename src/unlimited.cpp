@@ -1823,8 +1823,12 @@ UniValue submitminingsolution(const UniValue &params, bool fHelp)
     }
     catch (const std::exception &e)
     {
-        delete coinbase;
-        throw;
+        if (DecodeHexTx(coinbase, cbhex.get_str()))
+            block.vtx[0] = MakeTransactionRef(std::move(coinbase));
+        else
+        {
+            throw JSONRPCError(RPC_DESERIALIZATION_ERROR, "coinbase decode failed");
+        }
     }
 
     // Coinbase:
