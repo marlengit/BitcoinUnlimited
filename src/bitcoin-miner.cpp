@@ -523,10 +523,8 @@ static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params
     return ret;
 }
 
-
 static UniValue RPCSubmitSolution(UniValue &solution, int &nblocks)
 {
-    // Throws exceptions
     UniValue reply = CallRPC("submitminingsolution", solution);
     const UniValue &error = find_value(reply, "error");
 
