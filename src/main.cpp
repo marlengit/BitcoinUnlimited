@@ -6918,6 +6918,29 @@ bool SendMessages(CNode *pto)
                 }
             }
         }
+        if (pto->mapGrapheneBlocksInFlight.size() > 0)
+        {
+            LOCK(pto->cs_mapgrapheneblocksinflight);
+            std::map<uint256, CNode::CGrapheneBlockInFlight>::iterator iter = pto->mapGrapheneBlocksInFlight.begin();
+            while (iter != pto->mapGrapheneBlocksInFlight.end())
+            {
+                // Use a timeout of 6 times the retry inverval before disconnecting.  This way only a max of 6
+                // re-requested thinblocks could be in memory at any one time.
+                if (!(*iter).second.fReceived &&
+                    (GetTime() - (*iter).second.nRequestTime) > 6 * blkReqRetryInterval / 1000000)
+                {
+                    if (!pto->fWhitelisted && Params().NetworkIDString() != "regtest")
+                    {
+                        LOG(THIN, "ERROR: Disconnecting peer %s due to thinblock download timeout exceeded "
+                                  "(%d secs)\n",
+                            pto->GetLogName(), (GetTime() - (*iter).second.nRequestTime));
+                        pto->fDisconnect = true;
+                        break;
+                    }
+                }
+                iter++;
+            }
+        }
 
         // Check for block download timeout and disconnect node if necessary. Does not require cs_main.
         int64_t nNow = GetTimeMicros();
