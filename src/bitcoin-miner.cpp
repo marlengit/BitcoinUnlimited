@@ -371,7 +371,7 @@ static void CalculateNextMerkleRoot(uint256 &merkle_root, uint256 &merkle_branch
     merkle_root = hash;
 }
 
-static uint256 CalculateMerkleRoot(uint256 &coinbase_hash, std::vector<uint256> merklebranches)
+static uint256 CalculateMerkleRoot(uint256 &coinbase_hash, const std::vector<uint256> &merklebranches)
 {
     uint256 merkle_root = coinbase_hash;
     for (unsigned int i = 0; i < merklebranches.size(); i++)
@@ -383,7 +383,7 @@ static uint256 CalculateMerkleRoot(uint256 &coinbase_hash, std::vector<uint256> 
 
 static bool CpuMineBlockHasher(CBlockHeader *pblock,
     vector<unsigned char> &coinbaseBytes,
-    std::vector<uint256> merklebranches)
+    const std::vector<uint256> &merklebranches)
 {
     uint32_t nExtraNonce = std::rand();
     uint32_t nNonce = pblock->nNonce;
