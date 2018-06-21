@@ -438,7 +438,7 @@ static bool CpuMineBlockHasher(CBlockHeader *pblock,
     return found;
 }
 
-double GetDifficulty(uint64_t nBits)
+static double GetDifficulty(uint64_t nBits)
 {
     int nShift = (nBits >> 24) & 0xff;
 
