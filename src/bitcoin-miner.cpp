@@ -374,16 +374,16 @@ static void CalculateNextMerkleRoot(uint256 &merkle_root, uint256 &merkle_branch
 static uint256 CalculateMerkleRoot(uint256 &coinbase_hash, const std::vector<uint256> &merklebranches)
 {
     uint256 merkle_root = coinbase_hash;
-    for (unsigned int i = 0; i < merklebranches.size(); i++)
+    for (unsigned int i = 0; i < merkleproof.size(); i++)
     {
-        CalculateNextMerkleRoot(merkle_root, merklebranches[i]);
+        CalculateNextMerkleRoot(merkle_root, merkleproof[i]);
     }
     return merkle_root;
 }
 
 static bool CpuMineBlockHasher(CBlockHeader *pblock,
     vector<unsigned char> &coinbaseBytes,
-    const std::vector<uint256> &merklebranches)
+    const std::vector<uint256> &merkleproof)
 {
     uint32_t nExtraNonce = std::rand();
     uint32_t nNonce = pblock->nNonce;
@@ -402,7 +402,7 @@ static bool CpuMineBlockHasher(CBlockHeader *pblock,
             uint256 hash;
             CHash256().Write(pbytes, coinbaseBytes.size()).Finalize(hash.begin());
 
-            pblock->hashMerkleRoot = CalculateMerkleRoot(hash, merklebranches);
+            pblock->hashMerkleRoot = CalculateMerkleRoot(hash, merkleproof);
         }
 
         //
@@ -462,7 +462,7 @@ static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params
     UniValue tmp(UniValue::VOBJ);
     UniValue ret(UniValue::VARR);
     string tmpstr;
-    std::vector<uint256> merklebranches;
+    std::vector<uint256> merkleproof;
     CBlockHeader header;
     vector<unsigned char> coinbaseBytes(ParseHex(params["coinbase"].get_str()));
 
@@ -470,13 +470,13 @@ static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params
 
     // re-create merkle branches:
     {
-        UniValue uvMerklebranches = params["merklebranches"];
-        for (unsigned int i = 0; i < uvMerklebranches.size(); i++)
+        UniValue uvMerkleproof = params["merkleProof"];
+        for (unsigned int i = 0; i < uvMerkleproof.size(); i++)
         {
-            tmpstr = uvMerklebranches[i].get_str();
+            tmpstr = uvMerkleproof[i].get_str();
             std::vector<unsigned char> mbr = ParseHex(tmpstr);
             std::reverse(mbr.begin(), mbr.end());
-            merklebranches.push_back(uint256(mbr));
+            merkleproof.push_back(uint256(mbr));
         }
     }
 
@@ -504,7 +504,7 @@ static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params
         // and the block will be rejected.  So do not advance time (let it be advanced by bitcoind every time we
         // request a new block).
         // header.nTime = (header.nTime < GetTime()) ? GetTime() : header.nTime;
-        found = CpuMineBlockHasher(&header, coinbaseBytes, merklebranches);
+        found = CpuMineBlockHasher(&header, coinbaseBytes, merkleproof);
     }
 
     // Leave if not found:
