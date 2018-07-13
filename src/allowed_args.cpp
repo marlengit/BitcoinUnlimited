@@ -548,8 +548,6 @@ static void addDebuggingOptions(AllowedArgs &allowedArgs, HelpMessageMode mode)
                          DEFAULT_PRINTPRIORITY))
         .addDebugArg("connect-thinblock-force", optionalBool,
             strprintf("Force download of thinblocks from connect-thinblock peers (default: %u)", false))
-        .addDebugArg("connect-graphene-force", optionalBool,
-            strprintf("Force download of graphene blocks from connect-graphene peers (default: %u)", false))
 #ifdef ENABLE_WALLET
         .addDebugArg("privdb", optionalBool,
             strprintf("Sets the DB_PRIVATE flag in the wallet db environment (default: %u)", DEFAULT_WALLET_PRIVDB))
