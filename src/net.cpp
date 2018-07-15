@@ -599,26 +599,6 @@ bool CNode::ReceiveMsgBytes(const char *pch, unsigned int nBytes)
             if (strCommand != NetMsgType::PONG && strCommand != NetMsgType::PING && strCommand != NetMsgType::ADDR &&
                 strCommand != NetMsgType::VERSION && strCommand != NetMsgType::VERACK)
             {
-                if (strCommand == NetMsgType::GET_GRAPHENE)
-                    LOG(GRAPHENE, "ReceiveMsgBytes GET_GRAPHENE\n");
-                else if (strCommand == NetMsgType::GRAPHENEBLOCK)
-                    LOG(GRAPHENE, "ReceiveMsgBytes GRAPHENEBLOCK\n");
-                else if (strCommand == NetMsgType::GRAPHENETX)
-                    LOG(GRAPHENE, "ReceiveMsgBytes GRAPHENETX\n");
-                else if (strCommand == NetMsgType::GET_GRAPHENETX)
-                    LOG(GRAPHENE, "ReceiveMsgBytes GET_GRAPHENETX\n");
-                else if (strCommand == NetMsgType::GET_XTHIN)
-                    LOG(THIN, "ReceiveMsgBytes GET_XTHIN\n");
-                else if (strCommand == NetMsgType::XTHINBLOCK)
-                    LOG(THIN, "ReceiveMsgBytes XTHINBLOCK\n");
-                else if (strCommand == NetMsgType::THINBLOCK)
-                    LOG(THIN, "ReceiveMsgBytes THINBLOCK\n");
-                else if (strCommand == NetMsgType::XBLOCKTX)
-                    LOG(THIN, "ReceiveMsgBytes XBLOCKTX\n");
-                else if (strCommand == NetMsgType::GET_XBLOCKTX)
-                    LOG(THIN, "ReceiveMsgBytes GET_XBLOCKTX\n");
-
-
                 nActivityBytes += msg.hdr.nMessageSize;
 
                 // If the message is a priority message then move from the back to the front of the deque.
@@ -650,7 +630,7 @@ bool CNode::ReceiveMsgBytes(const char *pch, unsigned int nBytes)
 
                     std::string strFirstMsgCommand = vRecvMsg[0].hdr.GetCommand();
                     DbgAssert(strFirstMsgCommand == strCommand, );
-                    LOG(GRAPHENE, "Receive Queue: pushed %s to the front of the queue\n", strFirstMsgCommand);
+                    LOG(THIN | GRAPHENE, "Receive Queue: pushed %s to the front of the queue\n", strFirstMsgCommand);
                 }
             }
             // BU: end
