@@ -17,7 +17,6 @@ NUM_PROCS = multiprocessing.cpu_count()
 BEGIN_EPOCH = datetime(year=1970, month=1, day=1)
 CURRENT_SECS = (datetime.now() - BEGIN_EPOCH).total_seconds()
 OUT_FILE = '/tmp/compare_block_compression_%d.csv' % CURRENT_SECS
-MEMPOOL_INFO_SIZE = 8
 
 
 # running main will force system exit otherwise
