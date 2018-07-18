@@ -1729,7 +1729,7 @@ struct UnknownForkData
     bool UnknownForkSignalAt95Percent{false};
 };
 
-static UnknownForkData unknownFork[VERSIONBITS_NUM_BITS];
+static UnknownForkData unknownFork[Consensus::MAX_VERSION_BITS_DEPLOYMENTS];
 // bip135 end
 
 static int64_t nTimeCheck = 0;
@@ -2287,9 +2287,9 @@ void static CheckAndAlertUnknownVersionbits(const CChainParams &chainParams, con
     // start unexpected version / new fork signal checks only after BIT_WARNING_WINDOW block height
     if (pindex->nHeight >= BIT_WARNING_WINDOW)
     {
-        for (int bit = 0; bit < VERSIONBITS_NUM_BITS; bit++)
+        for (int bit = 0; bit < Consensus::MAX_VERSION_BITS_DEPLOYMENTS; bit++)
         {
-            if (!isConfiguredDeployment(chainParams.GetConsensus(), bit))
+            if (!IsConfiguredDeployment(chainParams.GetConsensus(), bit))
             {
                 const CBlockIndex *iindex = pindex; // iterating index, reset to chain tip
                 // set count for this bit to 0
