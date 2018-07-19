@@ -133,6 +133,12 @@ void CIblt::_insert(int plusOrMinus, uint64_t k, const std::vector<uint8_t> &v)
     if (!bucketsPerHash)
         return;
 
+    if (!n_hash)
+        return;
+    size_t bucketsPerHash = hashTable.size() / n_hash;
+    if (!bucketsPerHash)
+        return;
+
     std::vector<uint8_t> kvec = ToVec(k);
     const uint32_t kchk = keyChecksumCalc(kvec);
 
@@ -262,6 +268,12 @@ bool CIblt::listEntries(std::set<std::pair<uint64_t, std::vector<uint8_t> > > &p
         }
         nTotalErased += nErased;
     } while (nErased > 0 && nTotalErased < peeled.hashTable.size() / MIN_OVERHEAD);
+
+    if (!n_hash)
+        return false;
+    size_t peeled_bucketsPerHash = peeled.hashTable.size() / n_hash;
+    if (!peeled_bucketsPerHash)
+        return false;
 
     if (!n_hash)
         return false;
