@@ -44,6 +44,16 @@ static inline uint32_t keyChecksumCalc(const std::vector<uint8_t> &kvec)
 }
 
 
+// mask that can be reduced to reduce the number of checksum bits in the IBLT
+// -- ANY VALUE OTHER THAN 0xffffffff IS FOR TESTING ONLY! --
+static const uint32_t KEYCHECK_MASK = 0xffffffff;
+
+static inline uint32_t keyChecksumCalc(const std::vector<uint8_t> &kvec)
+{
+    return MurmurHash3(N_HASHCHECK, kvec) & KEYCHECK_MASK;
+}
+
+
 template <typename T>
 std::vector<uint8_t> ToVec(T number)
 {
