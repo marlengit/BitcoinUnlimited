@@ -91,7 +91,7 @@ public:
     // Returns false if overloaded and we don't know whether or
     // not k is in the table.
     bool get(uint64_t k, std::vector<uint8_t> &result) const;
-    uint8_t getNHash() { return n_hash; }
+
     // Adds entries to the given sets:
     //  positive is all entries that were inserted
     //  negative is all entreis that were erased but never added (or
