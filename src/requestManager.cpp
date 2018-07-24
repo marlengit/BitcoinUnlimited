@@ -603,7 +603,7 @@ void CRequestManager::ResetLastBlockRequestTime(const uint256 &hash)
     return false; // no block was requested
 }
 
-void CRequestManager::ResetLastRequestTime(const uint256 &hash)
+void CRequestManager::ResetLastBlockRequestTime(const uint256 &hash)
 {
     LOCK(cs_objDownloader);
     OdMap::iterator itemIter = sendBlkIter;
