@@ -5554,7 +5554,7 @@ bool ProcessMessage(CNode *pfrom, std::string strCommand, CDataStream &vRecv, in
         {
             const CInv &inv = vInv[nInv];
             if (!((inv.type == MSG_TX) || (inv.type == MSG_BLOCK) || (inv.type == MSG_FILTERED_BLOCK) ||
-                    (inv.type == MSG_THINBLOCK) || (inv.type == MSG_XTHINBLOCK)))
+                    (inv.type == MSG_THINBLOCK)))
             {
                 Misbehaving(pfrom->GetId(), 20);
                 return error("message inv invalid type = %u", inv.type);
