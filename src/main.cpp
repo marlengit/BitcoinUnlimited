@@ -526,7 +526,7 @@ bool IsMay152018Next(const Consensus::Params &consensusparams, const CBlockIndex
         return false;
     }
 
-    return pindexPrev->forkAtNextBlock(miningForkTime.value);
+    return pindexPrev->forkAtNextBlock(miningForkTime.Value());
 }
 
 
