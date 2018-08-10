@@ -181,7 +181,7 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript &sc
         tmpl = CreateNewBlock(scriptPubKeyIn, true, coinbaseSize);
     }
 
-    return std::move(tmpl);
+    return tmpl;
 }
 
 std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript &scriptPubKeyIn,

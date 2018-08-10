@@ -6918,13 +6918,15 @@ bool SendMessages(CNode *pto)
                 }
             }
         }
-        if (!pto->mapGrapheneBlocksInFlight.empty())
         {
             LOCK(pto->cs_mapgrapheneblocksinflight);
-            for (auto &item : pto->mapGrapheneBlocksInFlight)
+            if (!pto->mapGrapheneBlocksInFlight.empty())
             {
-                if (CheckForDownloadTimeout(pto, item.second.fReceived, item.second.nRequestTime))
-                    break;
+                for (auto &item : pto->mapGrapheneBlocksInFlight)
+                {
+                    if (CheckForDownloadTimeout(pto, item.second.fReceived, item.second.nRequestTime))
+                        break;
+                }
             }
         }
 
