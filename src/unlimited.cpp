@@ -1699,6 +1699,7 @@ static UniValue MkMiningCandidateJson(CMiningCandidate &candid)
     {
         const CTransaction *tran = block.vtx[0].get();
         ret.push_back(Pair("coinbase", EncodeHexTx(*tran)));
+        // printf("MkMiningCandidateJson coinbase %lu\n",EncodeHexTx(*tran).length());
     }
 
     ret.push_back(Pair("version", block.nVersion));
