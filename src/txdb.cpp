@@ -73,7 +73,7 @@ bool CCoinsViewDB::HaveCoin(const COutPoint &outpoint) const
     return db.Exists(CoinEntry(&outpoint));
 }
 
-uint256 CCoinsViewDB::_GetBestBlock() const
+uint256 CCoinsViewDB::GetBestBlock() const
 {
     READLOCK(cs_utxo);
     return _GetBestBlock();
