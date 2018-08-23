@@ -152,10 +152,6 @@ CTransactionRef BlockAssembler::coinbaseTx(const CScript &scriptPubKeyIn, int _n
     tx.vout[0].nValue = nValue;
     tx.vin[0].scriptSig = CScript() << _nHeight << OP_0;
 
-    if (coinbaseSize > -1)
-        MkFixedSizeCoinbaseTx(tx, (int32_t)coinbaseSize);
-    // Do not add transactions to tx.vout[0] below here.
-
     // BU005 add block size settings to the coinbase
     std::string cbmsg = FormatCoinbaseMessage(BUComments, minerComment);
     const char *cbcstr = cbmsg.c_str();
@@ -235,8 +231,8 @@ std::unique_ptr<CBlockTemplate> BlockAssembler::CreateNewBlock(const CScript &sc
             nBlockSigOps);
 
         // Create coinbase transaction.
-        pblock->vtx[0] = coinbaseTx(
-            scriptPubKeyIn, nHeight, nFees + GetBlockSubsidy(nHeight, chainparams.GetConsensus()), coinbaseSize);
+        pblock->vtx[0] =
+            coinbaseTx(scriptPubKeyIn, nHeight, nFees + GetBlockSubsidy(nHeight, chainparams.GetConsensus()));
         pblocktemplate->vTxFees[0] = -nFees;
 
         // Fill in header
