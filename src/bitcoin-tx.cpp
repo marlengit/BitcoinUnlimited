@@ -534,8 +534,6 @@ static void MutateTxSign(CMutableTransaction &tx, const string &flagStr)
     // Sign what we can:
     for (unsigned int i = 0; i < mergedTx.vin.size(); i++)
     {
-        LOCK(view.cs_utxo);
-
         CTxIn &txin = mergedTx.vin[i];
         CoinModifier coin(view, txin.prevout);
         if (coin->IsSpent())

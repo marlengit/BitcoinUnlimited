@@ -868,7 +868,6 @@ UniValue signrawtransaction(const UniValue &params, bool fHelp)
     // Sign what we can:
     for (unsigned int i = 0; i < mergedTx.vin.size(); i++)
     {
-        LOCK(view.cs_utxo);
         CTxIn &txin = mergedTx.vin[i];
         CoinAccessor coin(view, txin.prevout);
         if (coin->IsSpent())
