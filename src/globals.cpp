@@ -18,7 +18,6 @@
 #include "consensus/params.h"
 #include "consensus/validation.h"
 #include "dosman.h"
-#include "graphene.h"
 #include "leakybucket.h"
 #include "main.h"
 #include "miner.h"

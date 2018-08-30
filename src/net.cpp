@@ -21,7 +21,6 @@
 #include "consensus/consensus.h"
 #include "crypto/common.h"
 #include "dosman.h"
-#include "graphene.h"
 #include "hash.h"
 #include "iblt.h"
 #include "primitives/transaction.h"

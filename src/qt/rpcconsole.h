@@ -12,7 +12,6 @@
 #include "blockrelay/graphene.h"
 #include "blockrelay/thinblock.h"
 #include "net.h"
-#include "thinblock.h"
 
 #include <QCompleter>
 #include <QWidget>
