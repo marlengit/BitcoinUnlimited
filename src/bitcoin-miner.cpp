@@ -255,7 +255,7 @@ static UniValue CpuMineBlock(unsigned int searchDuration, const UniValue &params
 
     uint32_t startNonce = header.nNonce = std::rand();
 
-    printf("Mining: id: %lx parent: %s bits: %x difficulty: %3.2f time: %d\n", (uint64_t)params["id"].get_int64(),
+    printf("Mining: id: %x parent: %s bits: %x difficulty: %3.2f time: %d\n", (unsigned int)params["id"].get_int64(),
         header.hashPrevBlock.ToString().c_str(), header.nBits, GetDifficulty(header.nBits), header.nTime);
 
     int64_t start = GetTime();

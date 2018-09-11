@@ -29,7 +29,7 @@
 static bool DEFAULT_BLOOM_FILTER_TARGETING = true;
 static bool ReconstructBlock(CNode *pfrom, const bool fXVal, int &missingCount, int &unnecessaryCount);
 
-CThinBlock::CThinBlock(const CBlock &block, CBloomFilter &filter)
+CThinBlock::CThinBlock(const CBlock &block, const CBloomFilter &filter)
 {
     header = block.GetBlockHeader();
 
@@ -221,7 +221,7 @@ bool CThinBlock::process(CNode *pfrom, int nSizeThinBlock)
 }
 
 
-CXThinBlock::CXThinBlock(const CBlock &block, CBloomFilter *filter)
+CXThinBlock::CXThinBlock(const CBlock &block, const CBloomFilter *filter)
 {
     header = block.GetBlockHeader();
     this->collision = false;
@@ -1350,7 +1350,7 @@ bool CThinBlockData::CheckThinblockTimer(const uint256 &hash)
         if (iter != mapThinBlockTimer.end())
         {
             int64_t elapsed = GetTimeMillis() - iter->second.first;
-            if (elapsed > nTimeToWait)
+            if (elapsed > (int64_t) nTimeToWait)
             {
                 // Only print out the log entry once.  Because the thinblock timer will be hit
                 // many times when requesting a block we don't want to fill up the log file.
@@ -1533,13 +1533,21 @@ void SendXThinBlock(ConstCBlockRef pblock, CNode *pfrom, const CInv &inv)
 {
     if (inv.type == MSG_XTHINBLOCK)
     {
-        CXThinBlock xThinBlock(*pblock, pfrom->pThinBlockFilter);
-        int nSizeBlock = pblock->GetBlockSize();
-        if (xThinBlock.collision ==
-            true) // If there is a cheapHash collision in this block then send a normal thinblock
+        CXThinBlock xThinBlock;
         {
-            CThinBlock thinBlock(*pblock, *pfrom->pThinBlockFilter);
-            int nSizeThinBlock = ::GetSerializeSize(xThinBlock, SER_NETWORK, PROTOCOL_VERSION);
+            LOCK(pfrom->cs_filter);
+            xThinBlock = CXThinBlock(*pblock, pfrom->pThinBlockFilter);
+        }
+        int nSizeBlock = pblock->GetBlockSize();
+        // If there is a cheapHash collision in this block then send a normal thinblock
+        if (xThinBlock.collision == true)
+        {
+            CThinBlock thinBlock;
+            {
+                LOCK(pfrom->cs_filter);
+                thinBlock = CThinBlock(*pblock, *pfrom->pThinBlockFilter);
+            }
+            int nSizeThinBlock = ::GetSerializeSize(thinBlock, SER_NETWORK, PROTOCOL_VERSION);
             if (nSizeThinBlock < nSizeBlock)
             {
                 pfrom->PushMessage(NetMsgType::THINBLOCK, thinBlock);
@@ -1584,7 +1592,11 @@ void SendXThinBlock(ConstCBlockRef pblock, CNode *pfrom, const CInv &inv)
     }
     else if (inv.type == MSG_THINBLOCK)
     {
-        CThinBlock thinBlock(*pblock, *pfrom->pThinBlockFilter);
+        CThinBlock thinBlock;
+        {
+            LOCK(pfrom->cs_filter);
+            thinBlock = CThinBlock(*pblock, *pfrom->pThinBlockFilter);
+        }
         int nSizeBlock = pblock->GetBlockSize();
         int nSizeThinBlock = ::GetSerializeSize(thinBlock, SER_NETWORK, PROTOCOL_VERSION);
         if (nSizeThinBlock < nSizeBlock)
