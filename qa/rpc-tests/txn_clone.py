@@ -13,7 +13,7 @@ from test_framework.util import *
 import pdb
 import traceback
 
-class TxnMallTest(BitcoinTestFramework):
+class TxnCloneTest(BitcoinTestFramework):
 
     def add_options(self, parser):
         parser.add_option("--mineblock", dest="mine_block", default=False, action="store_true",
@@ -140,7 +140,7 @@ class TxnMallTest(BitcoinTestFramework):
         tx1 = self.nodes[0].gettransaction(txid1)
         tx1_clone = self.nodes[0].gettransaction(txid1_clone)
         tx2 = self.nodes[0].gettransaction(txid2)
-        
+
         # Verify expected confirmations
         assert_equal(tx1["confirmations"], -2)
         assert_equal(tx1_clone["confirmations"], 2)
@@ -171,13 +171,19 @@ class TxnMallTest(BitcoinTestFramework):
         assert_equal(self.nodes[1].getbalance("from0", 0), -(tx1["amount"] + tx2["amount"]))
 
 if __name__ == '__main__':
-    TxnMallTest().main()
+    TxnCloneTest().main()
 
 def Test():
-    t = TxnMallTest()
+    t = TxnCloneTest()
     t.drop_to_pdb = True
     bitcoinConf = {
-        "debug": ["net", "blk", "thin", "mempool", "req", "bench", "evict"],  # "lck"
-        "blockprioritysize": 2000000  # we don't want any transactions rejected due to insufficient fees...
+        "debug": ["blk", "mempool", "net", "req"],
+        "logtimemicros": 1
     }
-    t.main(["--tmppfx=/ramdisk/test","--nocleanup","--noshutdown"], bitcoinConf, None)  # , "--tracerpc"])
+
+    flags = [] # ["--nocleanup", "--noshutdown"]
+    if os.path.isdir("/ramdisk/test"):
+        flags.append("--tmppfx=/ramdisk/test")
+    binpath = findBitcoind()
+    flags.append("--srcdir=%s" % binpath)
+    t.main(flags, bitcoinConf, None)
