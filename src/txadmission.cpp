@@ -3,18 +3,18 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 //#include "chainparams.h"
-#include "blockstorage/blockstorage.h"
-#include "dosman.h"
-#include "init.h"
-#include "fastfilter.h"
-#include "net.h"
-#include "timedata.h"
 #include "txadmission.h"
-#include "txorphanpool.h"
-#include "consensus/tx_verify.h"
+#include "blockstorage/blockstorage.h"
 #include "connmgr.h"
+#include "consensus/tx_verify.h"
+#include "dosman.h"
+#include "fastfilter.h"
+#include "init.h"
 #include "main.h" // for cs_main
+#include "net.h"
 #include "respend/respenddetector.h"
+#include "timedata.h"
+#include "txorphanpool.h"
 #include "unlimited.h"
 #include "util.h"
 #include "utiltime.h"
@@ -35,7 +35,11 @@ void ThreadTxAdmission();
 void ProcessOrphans(std::vector<uint256> &vWorkQueue);
 
 bool CheckFinalTx(const CTransaction &tx, int flags, const Snapshot &ss);
-bool CheckSequenceLocks(const CTransaction &tx, int flags, LockPoints *lp, bool useExistingLockPoints, const Snapshot &ss);
+bool CheckSequenceLocks(const CTransaction &tx,
+    int flags,
+    LockPoints *lp,
+    bool useExistingLockPoints,
+    const Snapshot &ss);
 
 
 void StartTxAdmission(boost::thread_group &threadGroup)
@@ -82,7 +86,7 @@ void FlushTxAdmission()
             } while (!txCommitQ.empty());
         }
 
-        {  // block everything and check
+        { // block everything and check
             CORRAL(txProcessingCorral, CORRAL_TX_PAUSE);
             {
                 LOCK(csTxInQ);
@@ -104,7 +108,7 @@ void EnqueueTxForAdmission(CTxInputData &txd)
     for (auto inp : txd.tx->vin)
     {
         uint256 hash = inp.prevout.hash;
-        unsigned char* first = hash.begin();
+        unsigned char *first = hash.begin();
         *first ^= (unsigned char)(inp.prevout.n & 255);
         if (!incomingConflicts.checkAndSet(hash))
         {
@@ -114,13 +118,13 @@ void EnqueueTxForAdmission(CTxInputData &txd)
     }
     if (!conflict)
     {
-        //LOG(MEMPOOL, "Enqueue for processing %x\n", txd.tx->GetHash().ToString());
+        // LOG(MEMPOOL, "Enqueue for processing %x\n", txd.tx->GetHash().ToString());
         txInQ.push(txd); // add this transaction onto the processing queue
         cvTxInQ.notify_one();
     }
     else
     {
-        //LOG(MEMPOOL, "Deferred %x\n", txd.tx->GetHash().ToString());
+        // LOG(MEMPOOL, "Deferred %x\n", txd.tx->GetHash().ToString());
         txDeferQ.push(txd);
     }
 }
@@ -238,15 +242,16 @@ void CommitTxToMempool()
     }
 
     {
-    LOCK(csTxInQ);
-    // Clear the filter of incoming conflicts, and put all queued tx on the deferred queue since they've been deferred
-    incomingConflicts.reset();
-    while(!txInQ.empty())
-    {
-        txDeferQ.push(txInQ.front());
-        txInQ.pop();
-    }
-    LOG(MEMPOOL, "Reset incoming filter\n");
+        LOCK(csTxInQ);
+        // Clear the filter of incoming conflicts, and put all queued tx on the deferred queue since they've been
+        // deferred
+        incomingConflicts.reset();
+        while (!txInQ.empty())
+        {
+            txDeferQ.push(txInQ.front());
+            txInQ.pop();
+        }
+        LOG(MEMPOOL, "Reset incoming filter\n");
     }
     ProcessOrphans(whatChanged);
 }
@@ -277,10 +282,11 @@ void ThreadTxAdmission()
         {
             CORRAL(txProcessingCorral, CORRAL_TX_PROCESSING);
 
-            {   // tx must be popped within the TX_PROCESSING corral or the state break between processing
+            { // tx must be popped within the TX_PROCESSING corral or the state break between processing
                 // and commitment will not be clean
                 CCriticalBlock lock(csTxInQ, "csTxInQ", __FILE__, __LINE__);
-                if (txInQ.empty()) continue;  // abort back into wait loop if another thread got my tx
+                if (txInQ.empty())
+                    continue; // abort back into wait loop if another thread got my tx
                 txd = txInQ.front(); // make copy so I can pop & release
                 txInQ.pop();
             }
@@ -324,12 +330,12 @@ void ThreadTxAdmission()
             }
 
             bool isRespend = false;
-            if (ParallelAcceptToMemoryPool(
-                    txHandlerSnap, mempool, state, tx, true, &fMissingInputs, false, false, TransactionClass::DEFAULT, vCoinsToUncache, &isRespend))
+            if (ParallelAcceptToMemoryPool(txHandlerSnap, mempool, state, tx, true, &fMissingInputs, false, false,
+                    TransactionClass::DEFAULT, vCoinsToUncache, &isRespend))
             {
                 RelayTransaction(tx);
 
-                //LOG(MEMPOOL, "AcceptToMemoryPool: peer=%s: accepted %s onto Q\n", txd.nodeName,
+                // LOG(MEMPOOL, "AcceptToMemoryPool: peer=%s: accepted %s onto Q\n", txd.nodeName,
                 //    tx->GetHash().ToString());
             }
             else
@@ -337,9 +343,10 @@ void ThreadTxAdmission()
                 if (fMissingInputs)
                 {
                     // If we've forked and this is probably not a valid tx, then skip adding it to the orphan pool
-                    if (!chainActive.Tip()->IsforkActiveOnNextBlock(miningForkTime.Value()) || IsTxProbablyNewSigHash(*tx))
+                    if (!chainActive.Tip()->IsforkActiveOnNextBlock(miningForkTime.Value()) ||
+                        IsTxProbablyNewSigHash(*tx))
                     {
-                        LOCK(orphanpool.cs);  // WRITELOCK
+                        LOCK(orphanpool.cs); // WRITELOCK
                         orphanpool.AddOrphanTx(tx, txd.nodeId);
 
                         // DoS prevention: do not allow mapOrphanTransactions to grow unbounded
@@ -356,8 +363,8 @@ void ThreadTxAdmission()
                         LOG(MEMPOOL, "rejected orphan as likely contains old sighash");
                     }
                 }
-                else  // If the problem wasn't that the tx is an orphan, then uncache the inputs since we likely won't
-                      // need them again.
+                else // If the problem wasn't that the tx is an orphan, then uncache the inputs since we likely won't
+                // need them again.
                 {
                     for (const COutPoint &remove : vCoinsToUncache)
                         pcoinsTip->Uncache(remove);
@@ -375,7 +382,7 @@ void ThreadTxAdmission()
                     {
                         std::string strCommand = NetMsgType::TX;
                         from->PushMessage(NetMsgType::REJECT, strCommand, (unsigned char)state.GetRejectCode(),
-                                          state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), inv.hash);
+                            state.GetRejectReason().substr(0, MAX_REJECT_MESSAGE_LENGTH), inv.hash);
                         if (nDoS > 0)
                         {
                             dosMan.Misbehaving(from.get(), nDoS);
@@ -395,8 +402,8 @@ bool AcceptToMemoryPool(CTxMemPool &pool,
     bool *pfMissingInputs,
     bool fOverrideMempoolLimit,
     bool fRejectAbsurdFee,
-                        TransactionClass allowedTx)
-                        {
+    TransactionClass allowedTx)
+{
     std::vector<COutPoint> vCoinsToUncache;
 
     bool res = false;
@@ -406,8 +413,8 @@ bool AcceptToMemoryPool(CTxMemPool &pool,
 
     bool isRespend = false;
     bool missingInputs = false;
-    res = ParallelAcceptToMemoryPool(
-        txHandlerSnap, pool, state, tx, fLimitFree, &missingInputs, fOverrideMempoolLimit, fRejectAbsurdFee, allowedTx, vCoinsToUncache, &isRespend);
+    res = ParallelAcceptToMemoryPool(txHandlerSnap, pool, state, tx, fLimitFree, &missingInputs, fOverrideMempoolLimit,
+        fRejectAbsurdFee, allowedTx, vCoinsToUncache, &isRespend);
     if (res)
     {
         RelayTransaction(tx);
@@ -420,7 +427,8 @@ bool AcceptToMemoryPool(CTxMemPool &pool,
             pcoinsTip->Uncache(remove);
     }
 
-    if (pfMissingInputs) *pfMissingInputs = missingInputs;
+    if (pfMissingInputs)
+        *pfMissingInputs = missingInputs;
 
     if (res)
     {
@@ -456,7 +464,7 @@ bool ParallelAcceptToMemoryPool(Snapshot &ss,
     const CChainParams &chainparams = Params();
     const bool hasMay152018 = IsMay152018Enabled(chainparams.GetConsensus(), chainActive.Tip());
 
-    //LOG(MEMPOOL, "Mempool: Considering Tx %s\n", tx->GetHash().ToString());
+    // LOG(MEMPOOL, "Mempool: Considering Tx %s\n", tx->GetHash().ToString());
 
     if (!CheckTransaction(*tx, state))
         return false;
@@ -544,13 +552,13 @@ bool ParallelAcceptToMemoryPool(Snapshot &ss,
                         // fMissingInputs and not state.IsInvalid() is used to detect this condition, don't set
                         // state.Invalid()
                         *pfMissingInputs = true;
-                        break;  // There is no point checking any more once one fails, for orphans we will recheck
+                        break; // There is no point checking any more once one fails, for orphans we will recheck
                     }
                 }
                 if (*pfMissingInputs == true)
                 {
                     return false; // state.Invalid(false, REJECT_MISSING_INPUTS, "bad-txns-missing-inputs", "Inputs
-                                  // unavailable in ParallelAcceptToMemoryPool", false);
+                    // unavailable in ParallelAcceptToMemoryPool", false);
                 }
             }
 
@@ -857,11 +865,12 @@ void ProcessOrphans(std::vector<uint256> &vWorkQueue)
 
     // Recursively process any orphan transactions that depended on this one
     {
-        LOCK(orphanpool.cs);  // TODO READLOCK()
+        LOCK(orphanpool.cs); // TODO READLOCK()
         std::set<NodeId> setMisbehaving;
         for (unsigned int i = 0; i < vWorkQueue.size(); i++)
         {
-            std::map<uint256, std::set<uint256> >::iterator itByPrev = orphanpool.mapOrphanTransactionsByPrev.find(vWorkQueue[i]);
+            std::map<uint256, std::set<uint256> >::iterator itByPrev =
+                orphanpool.mapOrphanTransactionsByPrev.find(vWorkQueue[i]);
             if (itByPrev == orphanpool.mapOrphanTransactionsByPrev.end())
                 continue;
             for (std::set<uint256>::iterator mi = itByPrev->second.begin(); mi != itByPrev->second.end(); ++mi)
@@ -900,8 +909,8 @@ void ProcessOrphans(std::vector<uint256> &vWorkQueue)
     }
 
     {
-        LOCK(orphanpool.cs);  // TODO WRITELOCK
-        for (auto hash: vEraseQueue)
+        LOCK(orphanpool.cs); // TODO WRITELOCK
+        for (auto hash : vEraseQueue)
             orphanpool.EraseOrphanTx(hash);
         //  BU: Xtreme thinblocks - purge orphans that are too old
         orphanpool.EraseOrphansByTime();
@@ -925,7 +934,11 @@ void Snapshot::Load(void)
     cvMempool = new CCoinsViewMemPool(coins, mempool);
 }
 
-bool CheckSequenceLocks(const CTransaction &tx, int flags, LockPoints *lp, bool useExistingLockPoints, const Snapshot &ss)
+bool CheckSequenceLocks(const CTransaction &tx,
+    int flags,
+    LockPoints *lp,
+    bool useExistingLockPoints,
+    const Snapshot &ss)
 {
     AssertLockHeld(mempool.cs);
 
